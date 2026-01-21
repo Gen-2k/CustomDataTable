@@ -10,6 +10,7 @@ export const ACTIONS = {
   SET_EDIT_CELL: "SET_EDIT_CELL",
   UPDATE_ROW: "UPDATE_ROW",
   SET_FACETS: "SET_FACETS",
+  TOGGLE_COLUMN: "TOGGLE_COLUMN",
 };
 
 /**
@@ -17,6 +18,13 @@ export const ACTIONS = {
  */
 export function tableReducer(state, action) {
   switch (action.type) {
+    case ACTIONS.TOGGLE_COLUMN:
+      return {
+        ...state,
+        hiddenColumns: state.hiddenColumns.includes(action.payload)
+          ? state.hiddenColumns.filter((key) => key !== action.payload)
+          : [...state.hiddenColumns, action.payload],
+      };
     case ACTIONS.START_FETCH:
       return { ...state, loading: true, error: null };
     case ACTIONS.FETCH_SUCCESS:
@@ -56,7 +64,7 @@ export function tableReducer(state, action) {
       };
     case ACTIONS.SYNC_DEBOUNCED_SEARCH:
       return { ...state, debouncedSearchTerm: action.payload, currentPage: 1 };
-    
+
     // Simplified Edit Cases
     case ACTIONS.SET_EDIT_CELL:
       return { ...state, editingCell: action.payload };
@@ -65,9 +73,9 @@ export function tableReducer(state, action) {
         ...state,
         editingCell: null,
         data: state.data.map((row) =>
-          (row.id === action.payload.id || row._id === action.payload.id) 
-            ? { ...row, ...action.payload } 
-            : row
+          row.id === action.payload.id || row._id === action.payload.id
+            ? { ...row, ...action.payload }
+            : row,
         ),
       };
 

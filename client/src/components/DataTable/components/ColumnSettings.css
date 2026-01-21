@@ -1,0 +1,117 @@
+.dt-column-settings-container {
+  position: relative;
+  display: inline-block;
+}
+
+.dt-column-settings-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--dt-bg-paper);
+  border: 1px solid var(--dt-border-light);
+  border-radius: 10px;
+  color: var(--dt-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.dt-column-settings-toggle:hover {
+  background: #f8fafc;
+  border-color: var(--dt-primary-light);
+  color: var(--dt-primary);
+}
+
+.dt-column-settings-toggle.is-active {
+  background: var(--dt-primary-alpha);
+  border-color: var(--dt-primary);
+  color: var(--dt-primary);
+}
+
+.dt-column-settings-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: white;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--dt-border-light);
+  z-index: 1000;
+  padding: 8px;
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dt-column-settings-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--dt-border-light);
+  margin-bottom: 6px;
+}
+
+.dt-column-settings-header h4 {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dt-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dt-column-settings-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.dt-column-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dt-column-item:hover {
+  background: #f1f5f9;
+}
+
+.dt-column-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid #cbd5e1;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dt-column-item.is-visible .dt-column-checkbox {
+  background: var(--dt-primary);
+  border-color: var(--dt-primary);
+  color: white;
+}
+
+.dt-column-label {
+  font-size: 14px;
+  color: var(--dt-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

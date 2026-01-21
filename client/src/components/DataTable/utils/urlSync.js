@@ -26,6 +26,9 @@ export const getInitialStateFromURL = (defaults) => {
       console.error("Failed to parse filters from URL", e);
     }
   }
+  if (params.has("hide")) {
+    state.hiddenColumns = params.get("hide").split(",").filter(Boolean);
+  }
 
   return state;
 };
@@ -44,6 +47,9 @@ export const updateURLFromState = (state) => {
   }
   if (state.activeFilters && state.activeFilters.length > 0) {
     params.set("filters", JSON.stringify(state.activeFilters));
+  }
+  if (state.hiddenColumns && state.hiddenColumns.length > 0) {
+    params.set("hide", state.hiddenColumns.join(","));
   }
 
   const query = params.toString();

@@ -6,7 +6,15 @@ import { resolveEditor } from "./editors";
  * EditableCell - Manages the lifecycle of an inline edit.
  * Uses the Editor Registry to render the correct UI for each data type.
  */
-const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit, onSave, onCancel }) => {
+const EditableCell = ({
+  value: initialValue,
+  row,
+  column,
+  isEditing,
+  onStartEdit,
+  onSave,
+  onCancel,
+}) => {
   const [val, setVal] = useState(initialValue);
   const [isSaving, setIsSaving] = useState(false);
   const [prevIsEditing, setPrevIsEditing] = useState(isEditing);
@@ -30,7 +38,13 @@ const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit
         fetchFacetOptions(column.key);
       }
     }
-  }, [isEditing, column.dynamicOptions, column.key, facetCache, fetchFacetOptions]);
+  }, [
+    isEditing,
+    column.dynamicOptions,
+    column.key,
+    facetCache,
+    fetchFacetOptions,
+  ]);
 
   const handleCommit = async (finalValue) => {
     if (isSaving) return;
@@ -43,7 +57,11 @@ const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit
     try {
       // Type casting logic
       let casted = valueToSave;
-      if (column.filterType === "number" && valueToSave !== "" && valueToSave !== null) {
+      if (
+        column.filterType === "number" &&
+        valueToSave !== "" &&
+        valueToSave !== null
+      ) {
         casted = Number(valueToSave);
       } else if (column.filterType === "boolean") {
         casted = String(valueToSave) === "true";
@@ -59,9 +77,9 @@ const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit
 
   if (!isEditing) {
     return (
-      <div 
-        className={`editable-cell-view ${isSaving ? "is-saving" : ""}`} 
-        onDoubleClick={!isSaving ? onStartEdit : undefined} 
+      <div
+        className={`editable-cell-view ${isSaving ? "is-saving" : ""}`}
+        onDoubleClick={!isSaving ? onStartEdit : undefined}
         title={isSaving ? "Saving changes..." : "Double click to edit"}
       >
         <span className="cell-value-text">
@@ -73,10 +91,15 @@ const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit
   }
 
   const Editor = resolveEditor(column);
-  const options = column.options || facetCache[column.key] || (column.filterType === "boolean" ? [
-    { label: "True", value: true },
-    { label: "False", value: false }
-  ] : []);
+  const options =
+    column.options ||
+    facetCache[column.key] ||
+    (column.filterType === "boolean"
+      ? [
+          { label: "True", value: true },
+          { label: "False", value: false },
+        ]
+      : []);
 
   // Separate Logic: isLoading is for metadata, isSaving is for the transaction
   const isMetadataLoading = column.dynamicOptions && !facetCache[column.key];
@@ -97,5 +120,3 @@ const EditableCell = ({ value: initialValue, row, column, isEditing, onStartEdit
 };
 
 export default EditableCell;
-
-

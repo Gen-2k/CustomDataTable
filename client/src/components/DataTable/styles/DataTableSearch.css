@@ -1,9 +1,16 @@
 @import "./DataTable.vars.css";
 
 /* --- Search Bar & Container --- */
-.dt-search-container {
+.dt-search-outer-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   width: 100%;
   margin-bottom: 24px;
+}
+
+.dt-search-container {
+  flex: 1;
   position: relative;
   z-index: 50;
 }

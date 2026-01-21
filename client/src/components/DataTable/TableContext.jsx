@@ -63,13 +63,16 @@ export const TableProvider = ({
     handleCancelEdit,
     handleSaveEdit,
     handleClearFilters,
+    handleToggleColumn,
     fetchFacetOptions,
+    // Column Customization
+    hiddenColumns,
   } = tableData;
 
   // 1. Memoize Search State
   const searchValue = useMemo(
     () => ({ searchTerm, activeFilters, debouncedSearchTerm, columns }),
-    [searchTerm, activeFilters, debouncedSearchTerm, columns]
+    [searchTerm, activeFilters, debouncedSearchTerm, columns],
   );
 
   const dataValue = useMemo(
@@ -85,6 +88,7 @@ export const TableProvider = ({
       columns,
       editingCell,
       facetCache,
+      hiddenColumns,
     }),
     [
       data,
@@ -98,7 +102,8 @@ export const TableProvider = ({
       columns,
       editingCell,
       facetCache,
-    ]
+      hiddenColumns,
+    ],
   );
 
   // 3. Memoize Stable Actions
@@ -112,6 +117,7 @@ export const TableProvider = ({
       handleStartEdit,
       handleCancelEdit,
       handleSaveEdit,
+      handleToggleColumn,
       fetchFacetOptions,
     }),
     [
@@ -123,8 +129,9 @@ export const TableProvider = ({
       handleStartEdit,
       handleCancelEdit,
       handleSaveEdit,
+      handleToggleColumn,
       fetchFacetOptions,
-    ]
+    ],
   );
 
   return (

@@ -46,56 +46,77 @@ const SkeletonRow = ({ columns = [] }) => (
  * Renders a single row of the table.
  * Memoized to prevent re-renders when other rows or state slices change.
  */
-const TableRow = memo(({ row, rowIdx, columns, editingCell, handleStartEdit, handleSaveEdit, handleCancelEdit }) => {
-  const rowId = row.id || row._id || `row-${rowIdx}`;
+const TableRow = memo(
+  ({
+    row,
+    rowIdx,
+    columns,
+    editingCell,
+    handleStartEdit,
+    handleSaveEdit,
+    handleCancelEdit,
+  }) => {
+    const rowId = row.id || row._id || `row-${rowIdx}`;
 
-  return (
-    <tr className="table-row">
-      {columns.map((col, colIdx) => {
-        const isEditing = editingCell?.rowId === rowId && editingCell?.colKey === col.key;
-        
-        return (
-          <td key={col.key || colIdx} className="table-cell">
-            <div className="cell-content">
-              {col.editable ? (
-                <EditableCell
-                  value={getNestedValue(row, col.key)}
-                  row={row}
-                  column={col}
-                  isEditing={isEditing}
-                  onStartEdit={() => handleStartEdit({ rowId, colKey: col.key })}
-                  onSave={(val) => handleSaveEdit(rowId, { [col.key]: val })}
-                  onCancel={handleCancelEdit}
-                />
-              ) : col.render ? (
-                col.render(row)
-              ) : (
-                getNestedValue(row, col.key)
-              )}
-            </div>
-          </td>
-        );
-      })}
-    </tr>
-  );
-});
+    return (
+      <tr className="table-row">
+        {columns.map((col, colIdx) => {
+          const isEditing =
+            editingCell?.rowId === rowId && editingCell?.colKey === col.key;
+
+          return (
+            <td key={col.key || colIdx} className="table-cell">
+              <div className="cell-content">
+                {col.editable ? (
+                  <EditableCell
+                    value={getNestedValue(row, col.key)}
+                    row={row}
+                    column={col}
+                    isEditing={isEditing}
+                    onStartEdit={() =>
+                      handleStartEdit({ rowId, colKey: col.key })
+                    }
+                    onSave={(val) => handleSaveEdit(rowId, { [col.key]: val })}
+                    onCancel={handleCancelEdit}
+                  />
+                ) : col.render ? (
+                  col.render(row)
+                ) : (
+                  getNestedValue(row, col.key)
+                )}
+              </div>
+            </td>
+          );
+        })}
+      </tr>
+    );
+  },
+);
 
 const DataTable = memo(() => {
   console.log("[DataTable] Rendered");
   const {
-    columns = [],
+    columns: allColumns = [],
     data = [],
     loading,
     error,
     sortConfig,
     pageSize,
     editingCell,
+    hiddenColumns = [],
   } = useTableData();
+
+  const columns = useMemo(
+    () => allColumns.filter((col) => !hiddenColumns.includes(col.key)),
+    [allColumns, hiddenColumns],
+  );
+
   const {
     handleSort: onSort,
     handleStartEdit,
     handleCancelEdit,
     handleSaveEdit,
+    handleToggleColumn,
   } = useTableActions();
 
   // 1. Guards
@@ -136,7 +157,11 @@ const DataTable = memo(() => {
       <div className="table-scroll-container">
         {/* Premium Progress Bar for re-fetching/searching/sorting */}
         {loading && data.length > 0 && (
-          <div className="loading-progress-bar" role="progressbar" aria-label="Loading data">
+          <div
+            className="loading-progress-bar"
+            role="progressbar"
+            aria-label="Loading data"
+          >
             <div className="loading-bar-inner" />
           </div>
         )}

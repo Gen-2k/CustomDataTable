@@ -36,6 +36,7 @@ const useTable = (config = {}) => {
         sortConfig: { key: null, direction: "asc" },
         editingCell: null,
         facetCache: {},
+        hiddenColumns: [],
       }),
     [initialPageSize],
   );

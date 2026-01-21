@@ -3,16 +3,24 @@ import { Search, X } from "lucide-react";
 import { useTableSearch, useTableActions } from "./TableContext";
 import "./styles/DataTableSearch.css";
 import "./styles/DataTable.vars.css";
-import { TYPE_OPERATORS, OPERATOR_DISPLAY_LABELS } from "./constants/DataTable.constants";
+import {
+  TYPE_OPERATORS,
+  OPERATOR_DISPLAY_LABELS,
+} from "./constants/DataTable.constants";
 import SearchMenu from "./components/SearchMenu";
 import FilterBuilder from "./components/FilterBuilder";
+import ColumnSettings from "./components/ColumnSettings";
 
 /**
- * DataTableSearch - The intelligent search bar with support for 
+ * DataTableSearch - The intelligent search bar with support for
  * global keyword search and structured advanced filters.
  */
 const DataTableSearch = ({ placeholder = "Search..." }) => {
-  const { searchTerm: searchTermTokens, activeFilters, columns } = useTableSearch();
+  const {
+    searchTerm: searchTermTokens,
+    activeFilters,
+    columns,
+  } = useTableSearch();
   const { handleSearch: onSearch, handleClearFilters } = useTableActions();
 
   const searchableFields = useMemo(
@@ -22,7 +30,7 @@ const DataTableSearch = ({ placeholder = "Search..." }) => {
         label: col.label,
         type: col.filterType || "text",
       })),
-    [columns]
+    [columns],
   );
 
   const [isOpen, setIsOpen] = useState(false);
@@ -82,7 +90,7 @@ const DataTableSearch = ({ placeholder = "Search..." }) => {
     if (!trimmed) return;
     setRecentSearches((prev) => {
       const filtered = prev.filter(
-        (s) => s.toLowerCase() !== trimmed.toLowerCase()
+        (s) => s.toLowerCase() !== trimmed.toLowerCase(),
       );
       const next = [trimmed, ...filtered].slice(0, 5);
       localStorage.setItem("dt_recent_searches", JSON.stringify(next));
@@ -138,7 +146,11 @@ const DataTableSearch = ({ placeholder = "Search..." }) => {
       }
       setInputValue("");
       closeSearch();
-    } else if (e.key === "Backspace" && !inputValue && searchTermTokens.length > 0) {
+    } else if (
+      e.key === "Backspace" &&
+      !inputValue &&
+      searchTermTokens.length > 0
+    ) {
       const tokens = [...searchTermTokens];
       const last = tokens.pop();
       onSearch("global", tokens);
@@ -165,133 +177,141 @@ const DataTableSearch = ({ placeholder = "Search..." }) => {
     return `${filter.label}: ${displayOperator} ${filter.value}`;
   };
 
-  const isAnySearchActive = inputValue || searchTermTokens.length > 0 || activeFilters.length > 0;
+  const isAnySearchActive =
+    inputValue || searchTermTokens.length > 0 || activeFilters.length > 0;
 
   return (
-    <div className="dt-scope dt-search-container" ref={wrapperRef}>
-      <div
-        className={`dt-search-wrapper ${isOpen ? "is-active" : ""}`}
-        onClick={() => setIsOpen(true)}
-      >
-        <Search className="dt-search-icon" size={18} />
-        <div className="dt-input-area">
-          {activeFilters.map((f, idx) => (
-            <div
-              key={`filter-${idx}`}
-              className={`dt-filter-chip ${
-                editingIndex === idx ? "is-editing" : ""
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEditFilter(idx, f);
-              }}
-            >
-              <span>{renderChipLabel(f)}</span>
-              <button
+    <div className="dt-scope dt-search-outer-wrapper">
+      <div className="dt-search-container" ref={wrapperRef}>
+        <div
+          className={`dt-search-wrapper ${isOpen ? "is-active" : ""}`}
+          onClick={() => setIsOpen(true)}
+        >
+          <Search className="dt-search-icon" size={18} />
+          <div className="dt-input-area">
+            {activeFilters.map((f, idx) => (
+              <div
+                key={`filter-${idx}`}
+                className={`dt-filter-chip ${
+                  editingIndex === idx ? "is-editing" : ""
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSearch(
-                    "setFilters",
-                    activeFilters.filter((_, i) => i !== idx)
-                  );
+                  handleEditFilter(idx, f);
                 }}
               >
-                <X size={12} />
-              </button>
-            </div>
-          ))}
+                <span>{renderChipLabel(f)}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSearch(
+                      "setFilters",
+                      activeFilters.filter((_, i) => i !== idx),
+                    );
+                  }}
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
 
-          {searchTermTokens.map((token, idx) => (
-            <div
-              key={`token-${idx}`}
-              className={`dt-filter-chip global-search-chip ${
-                editingTokenIdx === idx ? "is-editing" : ""
-              }`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleEditToken(idx, token);
-              }}
-            >
-              <Search size={10} style={{ marginRight: "2px" }} />
-              <span>{token}</span>
-              <button
+            {searchTermTokens.map((token, idx) => (
+              <div
+                key={`token-${idx}`}
+                className={`dt-filter-chip global-search-chip ${
+                  editingTokenIdx === idx ? "is-editing" : ""
+                }`}
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSearch(
-                    "global",
-                    searchTermTokens.filter((_, i) => i !== idx)
-                  );
+                  handleEditToken(idx, token);
                 }}
               >
-                <X size={12} />
-              </button>
-            </div>
-          ))}
+                <Search size={10} style={{ marginRight: "2px" }} />
+                <span>{token}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSearch(
+                      "global",
+                      searchTermTokens.filter((_, i) => i !== idx),
+                    );
+                  }}
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
 
-          <input
-            ref={inputRef}
-            type="text"
-            className="dt-search-input"
-            placeholder={
-              activeFilters.length > 0 || searchTermTokens.length > 0 ? "" : placeholder
-            }
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={handleGlobalSearchSubmit}
-            onFocus={() => setIsOpen(true)}
-          />
-        </div>
-
-        {isAnySearchActive && (
-          <button
-            className="dt-clear-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              setInputValue("");
-              handleClearFilters();
-            }}
-          >
-            <X size={14} />
-          </button>
-        )}
-      </div>
-
-      {isOpen && (
-        <div className="dt-search-dropdown">
-          {!activeField ? (
-            <SearchMenu
-              recentSearches={recentSearches}
-              onRecentSelect={(term) => {
-                if (!searchTermTokens.includes(term)) onSearch("global", [...searchTermTokens, term]);
-                setIsOpen(false);
-              }}
-              searchableFields={searchableFields}
-              onFieldSelect={(field) => {
-                setActiveField(field);
-                setFilterValue("");
-                setEditingIndex(null); 
-                const allowed = TYPE_OPERATORS[field.type] || TYPE_OPERATORS.text;
-                setOperator(allowed[0].value);
-              }}
+            <input
+              ref={inputRef}
+              type="text"
+              className="dt-search-input"
+              placeholder={
+                activeFilters.length > 0 || searchTermTokens.length > 0
+                  ? ""
+                  : placeholder
+              }
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleGlobalSearchSubmit}
+              onFocus={() => setIsOpen(true)}
             />
-          ) : (
-            <FilterBuilder
-              activeField={activeField}
-              searchableFields={searchableFields}
-              operator={operator}
-              setOperator={setOperator}
-              filterValue={filterValue}
-              setFilterValue={setFilterValue}
-              onBack={() => {
-                setActiveField(null);
-                setEditingIndex(null);
+          </div>
+
+          {isAnySearchActive && (
+            <button
+              className="dt-clear-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                setInputValue("");
+                handleClearFilters();
               }}
-              onApply={applyAdvancedFilter}
-              setActiveField={setActiveField}
-            />
+            >
+              <X size={14} />
+            </button>
           )}
         </div>
-      )}
+
+        {isOpen && (
+          <div className="dt-search-dropdown">
+            {!activeField ? (
+              <SearchMenu
+                recentSearches={recentSearches}
+                onRecentSelect={(term) => {
+                  if (!searchTermTokens.includes(term))
+                    onSearch("global", [...searchTermTokens, term]);
+                  setIsOpen(false);
+                }}
+                searchableFields={searchableFields}
+                onFieldSelect={(field) => {
+                  setActiveField(field);
+                  setFilterValue("");
+                  setEditingIndex(null);
+                  const allowed =
+                    TYPE_OPERATORS[field.type] || TYPE_OPERATORS.text;
+                  setOperator(allowed[0].value);
+                }}
+              />
+            ) : (
+              <FilterBuilder
+                activeField={activeField}
+                searchableFields={searchableFields}
+                operator={operator}
+                setOperator={setOperator}
+                filterValue={filterValue}
+                setFilterValue={setFilterValue}
+                onBack={() => {
+                  setActiveField(null);
+                  setEditingIndex(null);
+                }}
+                onApply={applyAdvancedFilter}
+                setActiveField={setActiveField}
+              />
+            )}
+          </div>
+        )}
+      </div>
+      <ColumnSettings />
     </div>
   );
 };
