@@ -1,5 +1,6 @@
 import { useEffect, useCallback, useRef } from "react";
 import { ACTIONS } from "./useTableReducer";
+import { updateURLFromState } from "../utils/urlSync";
 
 const DEFAULT_REQUEST_MAPPER = (state) => ({
   page: state.currentPage,
@@ -7,7 +8,10 @@ const DEFAULT_REQUEST_MAPPER = (state) => ({
   sortBy: state.sortConfig.key || "",
   sortOrder: state.sortConfig.direction,
   search: state.debouncedSearchTerm,
-  filters: state.activeFilters.length > 0 ? JSON.stringify(state.activeFilters) : undefined,
+  filters:
+    state.activeFilters.length > 0
+      ? JSON.stringify(state.activeFilters)
+      : undefined,
 });
 
 const DEFAULT_RESPONSE_MAPPER = (res) => ({
@@ -38,6 +42,17 @@ export const useTableFetch = ({
     configRef.current = { requestMapper, responseMapper, customFetcher };
   }, [requestMapper, responseMapper, customFetcher]);
 
+  // Sync state to URL
+  useEffect(() => {
+    updateURLFromState(state);
+  }, [
+    state.currentPage,
+    state.pageSize,
+    state.searchTerm,
+    state.activeFilters,
+    state.sortConfig,
+  ]);
+
   const fetchData = useCallback(async () => {
     // 1. Cancel previous pending searches (Race condition prevention)
     if (abortControllerRef.current) abortControllerRef.current.abort();
@@ -47,10 +62,10 @@ export const useTableFetch = ({
     dispatch({ type: ACTIONS.START_FETCH });
 
     try {
-      const { 
-        requestMapper: currentMapper, 
-        responseMapper: currentResMapper, 
-        customFetcher: currentFetcher 
+      const {
+        requestMapper: currentMapper,
+        responseMapper: currentResMapper,
+        customFetcher: currentFetcher,
       } = configRef.current;
 
       // Map local state to API parameters
@@ -71,11 +86,15 @@ export const useTableFetch = ({
           if (val !== undefined && val !== null) query.append(key, val);
         });
 
-        const response = await fetch(`${apiUrl}?${query}`, { signal: controller.signal });
+        const response = await fetch(`${apiUrl}?${query}`, {
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error(`API Error: ${response.status}`);
         result = await response.json();
       } else {
-        throw new Error("Misconfiguration: Provide 'apiUrl' or 'customFetcher'.");
+        throw new Error(
+          "Misconfiguration: Provide 'apiUrl' or 'customFetcher'.",
+        );
       }
 
       const rawMapped = currentResMapper(result);
@@ -92,7 +111,15 @@ export const useTableFetch = ({
         dispatch({ type: ACTIONS.FETCH_ERROR, payload: err.message });
       }
     }
-  }, [apiUrl, state.currentPage, state.pageSize, state.debouncedSearchTerm, state.activeFilters, state.sortConfig, dispatch]);
+  }, [
+    apiUrl,
+    state.currentPage,
+    state.pageSize,
+    state.debouncedSearchTerm,
+    state.activeFilters,
+    state.sortConfig,
+    dispatch,
+  ]);
 
   // Main Fetch Effect
   useEffect(() => {
@@ -108,7 +135,7 @@ export const useTableFetch = ({
     const timer = setTimeout(() => {
       dispatch({ type: ACTIONS.SYNC_DEBOUNCED_SEARCH, payload: searchString });
     }, 500);
-    
+
     return () => clearTimeout(timer);
   }, [state.searchTerm, state.debouncedSearchTerm, dispatch]);
 
