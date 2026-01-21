@@ -1,0 +1,69 @@
+/* Smart Select (Combobox) */
+.smart-select-overlay {
+  display: flex;
+  flex-direction: column;
+  background: var(--dt-bg-main);
+  border: 1px solid var(--dt-primary);
+  border-radius: var(--dt-radius-sm);
+  box-shadow: var(--dt-shadow-lg);
+  width: max-content;
+  max-width: 400px;
+}
+
+.smart-select-overlay.is-saving {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.smart-select-input.overlay-mode {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  padding-right: 4px;
+  font: inherit;
+  font-size: 14px;
+  border: none;
+  border-bottom: 1px solid var(--dt-border-light);
+  outline: none;
+  background: transparent;
+}
+
+.smart-select-dropdown.portal {
+  max-height: 250px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.smart-select-option {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--dt-text-secondary);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.smart-select-option:hover {
+  background: var(--dt-bg-secondary);
+}
+
+.smart-select-option.active {
+  background: var(--dt-primary-light);
+  color: var(--dt-primary);
+}
+
+.smart-select-option .highlight {
+  color: var(--dt-primary);
+  font-weight: 700;
+}
+
+.smart-select-option.creatable {
+  color: var(--dt-primary);
+  border-top: 1px solid var(--dt-border-light);
+  font-weight: 500;
+}
+
+.smart-select-info {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--dt-text-muted);
+}

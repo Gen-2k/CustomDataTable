@@ -1,0 +1,95 @@
+/* --- DataTable Common Rendering Components --- */
+
+/* Info Stack Pattern (e.g. User Profile) */
+.dt-employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dt-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--dt-bg-main);
+  box-shadow: var(--dt-shadow-sm);
+}
+
+.dt-info-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.dt-info-stack-title {
+  font-weight: 600;
+  color: var(--dt-text-main);
+  font-size: 13.5px;
+  line-height: 1.2;
+}
+
+.dt-info-stack-subtitle {
+  font-size: 11px;
+  color: var(--dt-text-muted);
+  line-height: 1.2;
+}
+
+/* Badge & Tag Patterns */
+.dt-badge {
+  font-size: 12px;
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Predefined Color States */
+.dt-badge-success {
+  background: var(--dt-success-bg);
+  color: var(--dt-success-text);
+  border-color: var(--dt-success-border);
+}
+
+.dt-badge-info {
+  background: var(--dt-info-bg);
+  color: var(--dt-info-text);
+  border-color: var(--dt-info-border);
+}
+
+.dt-badge-warning {
+  background: var(--dt-warning-bg);
+  color: var(--dt-warning-text);
+  border-color: var(--dt-warning-border);
+}
+
+.dt-badge-error {
+  background: var(--dt-error-bg);
+  color: var(--dt-error-text);
+  border-color: var(--dt-error-border);
+}
+
+.dt-badge-gray {
+  background: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+  border-color: var(--dt-border-color);
+}
+
+/* Simple Chip Pattern */
+.dt-chips-container {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.dt-chip {
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background-color: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+  border: 1px solid var(--dt-border-color);
+}

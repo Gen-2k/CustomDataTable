@@ -1,0 +1,329 @@
+@import "./DataTable.vars.css";
+
+/* --- Search Bar & Container --- */
+.dt-search-container {
+  width: 100%;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 50;
+}
+
+.dt-search-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  background-color: var(--dt-bg-main);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-md);
+  min-height: 48px;
+  padding: 0 45px;
+  transition: all 0.2s ease;
+  box-shadow: var(--dt-shadow-sm);
+  cursor: text;
+}
+
+.dt-search-wrapper.is-active {
+  border-color: var(--dt-primary);
+  box-shadow: var(--dt-shadow-md);
+}
+
+.dt-input-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.dt-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--dt-text-muted);
+  pointer-events: none;
+}
+
+.dt-search-input {
+  flex: 1;
+  min-width: 100px;
+  height: 28px;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--dt-text-main);
+  font-size: 14px;
+}
+
+/* --- Search Chips & Filters --- */
+.dt-filter-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background-color: var(--dt-bg-header);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-sm);
+  color: var(--dt-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all var(--dt-transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.dt-filter-chip:hover {
+  background-color: var(--dt-border-color);
+  transform: translateY(-1px);
+  box-shadow: var(--dt-shadow-sm);
+}
+
+.dt-filter-chip:active {
+  transform: translateY(0);
+}
+
+.dt-filter-chip.is-editing {
+  background-color: var(--dt-text-main);
+  border-color: var(--dt-text-main);
+  color: var(--dt-bg-main);
+}
+
+.dt-filter-chip.global-search-chip {
+  background-color: var(--dt-primary-light);
+  border-color: var(--dt-info-border);
+  color: var(--dt-primary);
+}
+
+.dt-filter-chip button {
+  display: flex;
+  align-items: center;
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* --- Search & Filter Dropdown --- */
+.dt-search-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 320px;
+  width: max-content;
+  max-width: 95vw;
+  max-height: 400px;
+  background: var(--dt-bg-main);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-md);
+  box-shadow: var(--dt-shadow-lg);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+}
+
+.dt-dropdown-section {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--dt-border-light);
+}
+
+.dt-dropdown-section:last-child {
+  border-bottom: none;
+}
+
+.dt-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--dt-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dt-recent-item,
+.dt-field-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  color: var(--dt-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dt-recent-item:hover,
+.dt-field-item:hover {
+  background-color: var(--dt-bg-secondary);
+  color: var(--dt-text-main);
+  padding-left: 20px;
+}
+
+.dt-field-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+  border-radius: var(--dt-radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* --- Filter Builder Patterns --- */
+.dt-builder-compact {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px;
+}
+
+.dt-builder-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dt-field-select,
+.dt-operator-select-compact,
+.dt-compact-input,
+.dt-range-input-small,
+.dt-search-submit-btn {
+  height: 36px;
+  box-sizing: border-box;
+  font-family: inherit;
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-sm);
+  outline: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.dt-field-select,
+.dt-operator-select-compact {
+  padding: 0 28px 0 12px;
+  cursor: pointer;
+  appearance: none;
+  background-color: var(--dt-bg-secondary);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.dt-operator-select-compact {
+  background-color: var(--dt-bg-main);
+  min-width: 100px;
+}
+
+.dt-compact-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 0 12px;
+}
+
+.dt-compact-range-inputs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dt-range-input-small {
+  padding: 0 10px;
+  width: 135px;
+  color: var(--dt-text-main);
+}
+
+/* Search Actions */
+.dt-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--dt-bg-main);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-sm);
+  color: var(--dt-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dt-icon-btn:hover {
+  background: var(--dt-bg-header);
+  border-color: var(--dt-text-muted);
+  color: var(--dt-text-main);
+}
+
+.dt-clear-btn {
+  position: absolute;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dt-clear-btn:hover {
+  background: var(--dt-border-color);
+}
+
+.dt-search-submit-btn {
+  padding: 0 20px;
+  background-color: var(--dt-text-main);
+  color: var(--dt-bg-main);
+  border: 1px solid var(--dt-text-main);
+  border-radius: var(--dt-radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dt-search-submit-btn:hover {
+  background-color: #0f172a; /* Deep Midnight Slate */
+  border-color: #0f172a;
+}
+
+.dt-search-submit-btn:active {
+  background-color: #020617; /* Even deeper slate for click */
+  opacity: 0.9;
+}
+
+/* Responsive Overrides */
+@media (max-width: 650px) {
+  .dt-builder-compact {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dt-builder-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .dt-compact-range-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dt-range-input-small {
+    width: 100%;
+  }
+}

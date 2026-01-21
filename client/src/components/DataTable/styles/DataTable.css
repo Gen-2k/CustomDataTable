@@ -1,0 +1,233 @@
+@import "./DataTable.vars.css";
+
+/* --- Core Layout & Global Table Container --- */
+.table-wrapper-main {
+  position: relative;
+  background-color: var(--dt-bg-main);
+  width: 100%;
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-lg); 
+  overflow: hidden; 
+  box-shadow: var(--dt-shadow-sm);
+}
+
+.table-wrapper-main.is-loading {
+  pointer-events: none;
+}
+
+.table-scroll-container {
+  overflow-x: auto;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dt-scrollbar-thumb) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+  height: 6px; 
+  width: 6px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background-color: var(--dt-scrollbar-thumb);
+  border-radius: 20px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dt-scrollbar-thumb-hover);
+}
+
+.custom-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  color: var(--dt-text-secondary);
+  text-align: left;
+}
+
+/* --- Table Headers --- */
+.table-header {
+  background-color: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+  padding: 14px 20px;
+  border-bottom: 2px solid var(--dt-border-color);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  transition: background-color 0.2s ease;
+}
+
+.table-header.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.table-header.clickable:hover {
+  background-color: var(--dt-border-color);
+  color: var(--dt-text-main);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Sorting Indicators */
+.sort-icon-wrapper {
+  display: inline-flex;
+  align-items: center;
+  color: var(--dt-text-muted);
+  padding: 2px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.table-header:hover .sort-icon-wrapper {
+  color: var(--dt-text-secondary);
+  background: var(--dt-bg-secondary);
+}
+
+.sort-icon-wrapper.is-active {
+  color: var(--dt-primary);
+  background: var(--dt-primary-light);
+}
+
+/* --- Rows & Cells --- */
+.table-row {
+  transition: background-color var(--dt-transition-fast);
+}
+
+.table-row:hover {
+  background-color: var(--dt-bg-secondary);
+}
+
+.table-row:active {
+  background-color: var(--dt-border-light);
+}
+
+.table-cell {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--dt-border-light);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* --- Inline Cell Editing --- */
+.editable-cell-view,
+.editable-cell-input-wrapper {
+  margin: -4px -6px;
+  min-height: 1.5em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.editable-cell-view {
+  cursor: pointer;
+  width: 100%;
+  padding: 4px 6px;
+  border: 1px solid transparent;
+}
+
+.editable-cell-input {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 8px;
+  font: inherit;
+  font-size: 14px;
+  border: 1px solid var(--dt-primary);
+  border-radius: var(--dt-radius-sm);
+  outline: none;
+  background: var(--dt-bg-main);
+  transition: border-color 0.2s;
+}
+
+.editable-cell-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  position: relative;
+}
+
+.dt-editor-actions-bubble {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dt-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--dt-border-color);
+  background: var(--dt-bg-secondary);
+  color: var(--dt-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.dt-action-btn:hover {
+  background: var(--dt-bg-main);
+  border-color: var(--dt-text-muted);
+  color: var(--dt-text-main);
+}
+
+.dt-action-btn.dt-confirm {
+  color: var(--dt-primary);
+  border-color: var(--dt-primary-light);
+  background: var(--dt-primary-light);
+}
+
+.dt-action-btn.dt-confirm:hover {
+  background: var(--dt-primary);
+  color: var(--dt-bg-main);
+  border-color: var(--dt-primary);
+  transform: translateY(-1px);
+  box-shadow: var(--dt-shadow-sm);
+}
+
+.dt-action-btn.dt-cancel:hover {
+  background: var(--dt-error-bg);
+  color: var(--dt-error-text);
+  border-color: var(--dt-error-border);
+}
+
+/* --- Spinner Logic --- */
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: dt-spin 0.6s linear infinite;
+}
+
+.editable-cell-input-wrapper.is-saving .editable-cell-input {
+  background: var(--dt-bg-secondary);
+  border-color: var(--dt-border-color);
+  color: var(--dt-text-muted);
+  cursor: not-allowed;
+}
+
+.editable-cell-input-wrapper.is-saving {
+  opacity: 0.8;
+  pointer-events: none;
+}

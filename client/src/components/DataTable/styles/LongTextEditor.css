@@ -1,0 +1,136 @@
+/* LongText Modal Editor */
+.dt-pro-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--dt-overlay-bg);
+  backdrop-filter: var(--dt-overlay-blur);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+}
+
+.dt-pro-modal-card {
+  background: var(--dt-bg-main);
+  width: 100%;
+  max-width: 600px;
+  border-radius: var(--dt-radius-lg);
+  box-shadow: var(--dt-shadow-lg); 
+  overflow: hidden;
+  border: 1px solid var(--dt-border-light);
+  display: flex;
+  flex-direction: column;
+  animation: dt-pro-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dt-pro-modal-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dt-pro-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dt-text-main);
+  letter-spacing: -0.01em;
+}
+
+.dt-pro-modal-close {
+  color: var(--dt-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--dt-radius-md);
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.dt-pro-modal-close:hover {
+  background: var(--dt-bg-header);
+  color: var(--dt-text-main);
+}
+
+.dt-pro-modal-body {
+  padding: 0 24px;
+}
+
+.dt-pro-modal-textarea {
+  width: 100%;
+  height: 240px;
+  padding: 16px;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--dt-text-secondary);
+  background: var(--dt-bg-secondary);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-md);
+  resize: vertical;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.dt-pro-modal-textarea:focus {
+  background: var(--dt-bg-main);
+  border-color: var(--dt-primary);
+  box-shadow: var(--dt-shadow-sm);
+}
+
+.dt-pro-modal-footer {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dt-pro-modal-hint {
+  font-size: 12px;
+  color: var(--dt-text-muted);
+}
+
+.dt-pro-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.dt-pro-btn {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--dt-radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.dt-pro-btn-secondary {
+  background: var(--dt-bg-header);
+  color: var(--dt-text-secondary);
+}
+
+.dt-pro-btn-secondary:hover {
+  background: var(--dt-border-color);
+}
+
+.dt-pro-btn-primary {
+  background: var(--dt-primary);
+  color: var(--dt-bg-main);
+}
+
+.dt-pro-btn-primary:hover {
+  background: var(--dt-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--dt-shadow-md);
+}
+
+@keyframes dt-pro-slide-in {
+  from { transform: scale(0.95) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}

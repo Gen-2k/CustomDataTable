@@ -1,0 +1,137 @@
+/**
+ * DataTable Shared Variables & Design Tokens
+ * This file centralizes the design tokens so the component is fully self-contained.
+ */
+
+:root {
+  /* Colors */
+  --dt-primary: #3b82f6;
+  --dt-primary-hover: #2563eb;
+  --dt-primary-light: #eff6ff;
+
+  --dt-bg-main: #ffffff;
+  --dt-bg-secondary: #f8fafc;
+  --dt-bg-header: #f1f5f9;
+
+  --dt-border-color: #e2e8f0; 
+  --dt-border-light: #f1f5f9;
+
+  --dt-text-main: #1e293b;
+  --dt-text-secondary: #475569;
+  --dt-text-muted: #94a3b8;
+  
+  /* Semantic States */
+  --dt-error-text: #dc2626;
+  --dt-error-bg: #fef2f2;
+  --dt-error-border: #fee2e2;
+
+  --dt-success-text: #16a34a;
+  --dt-success-bg: #f0fdf4;
+  --dt-success-border: #bbf7d0;
+
+  --dt-warning-text: #c2410c;
+  --dt-warning-bg: #fff7ed;
+  --dt-warning-border: #ffedd5;
+
+  --dt-info-text: #0369a1;
+  --dt-info-bg: #f0f9ff;
+  --dt-info-border: #bae6fd;
+
+  --dt-overlay-bg: rgba(255, 255, 255, 0.75);
+  --dt-overlay-blur: blur(4px);
+
+  /* Scrollbars */
+  --dt-scrollbar-thumb: #e2e8f0;
+  --dt-scrollbar-thumb-hover: #cbd5e1;
+
+  /* Shapes */
+  --dt-radius-lg: 12px;
+  --dt-radius-md: 8px;
+  --dt-radius-sm: 6px;
+
+  /* Fonts */
+  --dt-font-family: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Global Shadows - Improved for depth */
+  --dt-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --dt-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --dt-shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --dt-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --dt-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --dt-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Focus States */
+  --dt-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Scoped Reset to ensure component isolation */
+.dt-scope {
+  box-sizing: border-box;
+  font-family: var(--dt-font-family);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dt-scope *,
+.dt-scope *::before,
+.dt-scope *::after {
+  box-sizing: border-box;
+}
+
+/* Scrolled hint for tables */
+.dt-scroll-hint-right {
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .dt-scroll-hint-right::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to left, rgba(255, 255, 255, 0.9), transparent);
+    pointer-events: none;
+    z-index: 5;
+    transition: opacity 0.3s;
+  }
+}
+
+/* Common scrollbar style */
+.dt-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.dt-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dt-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--dt-scrollbar-thumb);
+  border-radius: 20px;
+}
+
+.dt-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--dt-scrollbar-thumb-hover);
+}
+
+/* --- Global Animations --- */
+@keyframes dt-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dt-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes dt-fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
