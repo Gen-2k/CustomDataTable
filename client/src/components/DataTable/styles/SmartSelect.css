@@ -1,4 +1,4 @@
-/* --- Balanced & Professional Smart Select --- */
+/* --- Dynamic & Flexible Smart Select --- */
 .smart-select-overlay {
   display: flex;
   flex-direction: column;
@@ -7,20 +7,21 @@
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  width: 320px; /* Slightly wider for better text flow */
+  /* Remove fixed width to allow flexibility */
+  max-width: 480px; /* Professional cap to prevent over-extension */
   z-index: 9999;
 }
 
-/* Header bar with standard height */
+/* Header bar adapts to content */
 .smart-select-top-bar {
   display: flex;
   align-items: center;
   background: white;
   border-bottom: 1px solid #e2e8f0;
-  min-height: 40px; /* Standard professional height */
+  min-height: 40px;
 }
 
-/* Input container */
+/* Input container grows with tags */
 .smart-select-input-container {
   flex: 1;
   display: flex;
@@ -28,10 +29,10 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  min-width: 0;
+  min-width: 120px; /* Baseline for searchability */
 }
 
-/* Balanced Tag Design */
+/* Tags stay tight but readable */
 .dt-tag-pill {
   display: inline-flex;
   align-items: center;
@@ -41,8 +42,9 @@
   color: #334155;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
-  font-size: 13px; /* Standard readable size */
+  font-size: 13px;
   font-weight: 500;
+  white-space: nowrap; /* Prevent tag text wrapping */
 }
 
 .dt-tag-pill .remove-icon {
@@ -50,24 +52,25 @@
   color: #94a3b8;
 }
 
-/* Input field - Perfect standard size */
+/* Input field stays flexible */
 .smart-select-input.overlay-mode {
   flex: 1;
-  min-width: 80px;
+  min-width: 60px;
   border: none;
   outline: none;
-  font-size: 14px; /* Default professional font size */
+  font-size: 14px;
   background: transparent;
   padding: 4px 0;
   color: #1e293b;
 }
 
-/* Action buttons */
+/* Actions sidebar */
 .dt-editor-actions-bubble {
   display: flex;
   gap: 6px;
   padding: 0 12px;
   align-items: center;
+  flex-shrink: 0; /* Never collapse buttons */
 }
 
 .dt-editor-actions-bubble .dt-action-btn {
@@ -83,7 +86,7 @@
   justify-content: center;
 }
 
-/* Clean Dropdown */
+/* Dropdown list takes width of overlay */
 .smart-select-dropdown.portal {
   max-height: 200px;
   overflow-y: auto;
@@ -95,9 +98,10 @@
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  font-size: 14px; /* Standard readable size */
+  font-size: 14px;
   color: #475569;
   cursor: pointer;
+  white-space: nowrap; /* Avoid hiding long text in options */
 }
 
 .smart-select-option:hover,
@@ -113,6 +117,8 @@
 
 .smart-option-text {
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Still ellipsis to be safe, but width handles it */
 }
 
 .smart-select-info {

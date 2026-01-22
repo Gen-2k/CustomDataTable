@@ -34,7 +34,6 @@ export const tableColumns = [
     filterType: "text",
     editable: true,
     dynamicOptions: true,
-    strict: true,
   },
   {
     label: "Company",
@@ -56,7 +55,6 @@ export const tableColumns = [
     filterType: "text",
     editable: true,
     dynamicOptions: true,
-    strict: true,
     render: (r) => (
       <span
         className={`dt-badge ${
