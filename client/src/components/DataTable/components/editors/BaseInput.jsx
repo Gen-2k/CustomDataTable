@@ -1,6 +1,13 @@
 import { Check, X } from "lucide-react";
 
-const BaseInput = ({ value, onChange, onCommit, onCancel, isSaving, type = "text" }) => {
+const BaseInput = ({
+  value,
+  onChange,
+  onCommit,
+  onCancel,
+  isSaving,
+  type = "text",
+}) => {
   const handleKeyDown = (e) => {
     if (isSaving) return;
     if (e.key === "Enter") onCommit();
@@ -22,15 +29,15 @@ const BaseInput = ({ value, onChange, onCommit, onCancel, isSaving, type = "text
         onKeyDown={handleKeyDown}
       />
       <div className="dt-editor-actions-bubble">
-        <button 
-          className="dt-action-btn dt-confirm" 
+        <button
+          className="dt-action-btn dt-confirm"
           onClick={() => !isSaving && onCommit()}
           disabled={disabled}
         >
           {isSaving ? <div className="btn-spinner" /> : <Check size={14} />}
         </button>
-        <button 
-          className="dt-action-btn dt-cancel" 
+        <button
+          className="dt-action-btn dt-cancel"
           onClick={() => !isSaving && onCancel()}
           disabled={disabled}
         >

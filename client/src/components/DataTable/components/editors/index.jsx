@@ -1,7 +1,6 @@
 import BaseInput from "./BaseInput";
 import SmartSelect from "./SmartSelect";
 import LongTextEditor from "./LongTextEditor";
-import TagEditor from "./TagEditor";
 
 const EditorRegistry = {
   text: BaseInput,
@@ -9,7 +8,7 @@ const EditorRegistry = {
   date: (props) => <BaseInput {...props} type="date" />,
   select: SmartSelect,
   textarea: LongTextEditor,
-  tags: TagEditor,
+  tags: SmartSelect, // Now unified into SmartSelect
 };
 
 export const resolveEditor = (column) => {
@@ -17,7 +16,8 @@ export const resolveEditor = (column) => {
     return EditorRegistry[column.editorType];
   }
 
-  const hasSelectableOptions = column.options || column.dynamicOptions || column.filterType === "boolean";
+  const hasSelectableOptions =
+    column.options || column.dynamicOptions || column.filterType === "boolean";
   if (hasSelectableOptions) {
     return EditorRegistry.select;
   }

@@ -27,10 +27,29 @@ export const tableColumns = [
       </div>
     ),
   },
- 
-  { label: "Department", key: "work.department", filterType: "text", editable: true, dynamicOptions: true, strict: true },
-  { label: "Company", key: "work.company", filterType: "text", editable: true, dynamicOptions: true },
-  { label: "City", key: "contact.address.city", filterType: "text", editable: true, dynamicOptions: true },
+
+  {
+    label: "Department",
+    key: "work.department",
+    filterType: "text",
+    editable: true,
+    dynamicOptions: true,
+    strict: true,
+  },
+  {
+    label: "Company",
+    key: "work.company",
+    filterType: "text",
+    editable: true,
+    dynamicOptions: true,
+  },
+  {
+    label: "City",
+    key: "contact.address.city",
+    filterType: "text",
+    editable: true,
+    dynamicOptions: true,
+  },
   {
     label: "Contract",
     key: "work.contractType",
@@ -124,8 +143,14 @@ export const tableColumns = [
       </span>
     ),
   },
-  { label: "Nationality", key: "profile.nationality", filterType: "text", editable: true, dynamicOptions: true },
-   {
+  {
+    label: "Nationality",
+    key: "profile.nationality",
+    filterType: "text",
+    editable: true,
+    dynamicOptions: true,
+  },
+  {
     label: "Designation",
     key: "work.title",
     filterType: "text",
@@ -140,18 +165,18 @@ export const tableColumns = [
     editable: true,
     width: "300px",
     render: (r) => (
-      <div 
-        style={{ 
-          whiteSpace: "nowrap", 
-          overflow: "hidden", 
-          textOverflow: "ellipsis", 
+      <div
+        style={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
           maxWidth: "280px",
           color: "var(--dt-text-muted)",
-          fontSize: "13px"
+          fontSize: "13px",
         }}
       >
         {r.profile.bio || "No biography provided..."}
       </div>
-    )
+    ),
   },
 ];
