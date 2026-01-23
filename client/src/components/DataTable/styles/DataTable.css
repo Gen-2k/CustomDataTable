@@ -6,8 +6,8 @@
   background-color: var(--dt-bg-main);
   width: 100%;
   border: 1px solid var(--dt-border-color);
-  border-radius: var(--dt-radius-lg); 
-  overflow: hidden; 
+  border-radius: var(--dt-radius-lg);
+  overflow: hidden;
   box-shadow: var(--dt-shadow-sm);
 }
 
@@ -24,7 +24,7 @@
 }
 
 .table-scroll-container::-webkit-scrollbar {
-  height: 6px; 
+  height: 6px;
   width: 6px;
 }
 
@@ -122,6 +122,48 @@
   border-bottom: 1px solid var(--dt-border-light);
   vertical-align: middle;
   white-space: nowrap;
+  background-color: inherit; /* Ensure background is maintained for sticky */
+}
+
+/* --- Sticky Columns --- */
+.table-cell.is-sticky,
+.table-header.is-sticky {
+  background-color: var(--dt-bg-main) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+.table-header.is-sticky {
+  background-color: var(--dt-bg-header) !important;
+  z-index: 20;
+}
+
+/* Right side boundary shadow for left sticky columns */
+.is-sticky::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 10px;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* Show shadow only when scrolling (simplified: always show if it's sticky for now, or use JS to toggle) */
+/* For a better UX, we can show a subtle border always */
+.is-sticky {
+  border-right: 1px solid var(--dt-border-color) !important;
+}
+
+.is-sticky-right {
+  border-left: 1px solid var(--dt-border-color) !important;
+  border-right: none !important;
+}
+
+.table-row:hover .is-sticky {
+  background-color: var(--dt-bg-secondary) !important;
 }
 
 /* --- Inline Cell Editing --- */

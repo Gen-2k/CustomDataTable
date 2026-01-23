@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { getNestedValue } from "./utils/dataHelpers";
 import Pagination from "./Pagination";
@@ -29,7 +29,13 @@ const SortIcon = ({ sortConfig, columnKey }) => {
 const SkeletonRow = ({ columns = [] }) => (
   <tr className="table-row">
     {columns.map((col, idx) => (
-      <td key={`skeleton-cell-${idx}`} className="table-cell">
+      <td
+        key={`skeleton-cell-${idx}`}
+        className={`table-cell ${col.sticky ? "is-sticky" : ""} ${
+          col.sticky === "right" ? "is-sticky-right" : ""
+        }`}
+        style={{ ...col.stickyStyle }}
+      >
         <div
           className={
             col.key?.includes("firstName") || col.key?.includes("avatar")
@@ -64,8 +70,16 @@ const TableRow = memo(
           const isEditing =
             editingCell?.rowId === rowId && editingCell?.colKey === col.key;
 
+          const isSticky = !!col.sticky;
+
           return (
-            <td key={col.key || colIdx} className="table-cell">
+            <td
+              key={col.key || colIdx}
+              className={`table-cell ${isSticky ? "is-sticky" : ""} ${
+                col.sticky === "right" ? "is-sticky-right" : ""
+              }`}
+              style={{ ...col.stickyStyle }}
+            >
               <div className="cell-content">
                 {col.editable ? (
                   <EditableCell
@@ -105,11 +119,6 @@ const DataTable = memo(() => {
     hiddenColumns = [],
   } = useTableData();
 
-  const columns = useMemo(
-    () => allColumns.filter((col) => !hiddenColumns.includes(col.key)),
-    [allColumns, hiddenColumns],
-  );
-
   const {
     handleSort: onSort,
     handleStartEdit,
@@ -117,7 +126,47 @@ const DataTable = memo(() => {
     handleSaveEdit,
   } = useTableActions();
 
-  // 1. Guards
+  // 1. Calculate Sticky Offsets
+  const columns = useMemo(() => {
+    const visibleCols = allColumns.filter(
+      (col) => !hiddenColumns.includes(col.key),
+    );
+
+    let leftOffset = 0;
+    const withLeft = visibleCols.map((col) => {
+      const isSticky = col.sticky === "left";
+      const style = isSticky
+        ? {
+            position: "sticky",
+            left: leftOffset,
+            zIndex: 15,
+          }
+        : {};
+      if (isSticky) {
+        // Parse width to number if possible, else default to 150
+        const w = parseInt(col.width) || 150;
+        leftOffset += w;
+      }
+      return { ...col, stickyStyle: style };
+    });
+
+    let rightOffset = 0;
+    for (let i = withLeft.length - 1; i >= 0; i--) {
+      if (withLeft[i].sticky === "right") {
+        withLeft[i].stickyStyle = {
+          ...withLeft[i].stickyStyle,
+          position: "sticky",
+          right: rightOffset,
+          zIndex: 15,
+        };
+        const w = parseInt(withLeft[i].width) || 150;
+        rightOffset += w;
+      }
+    }
+    return withLeft;
+  }, [allColumns, hiddenColumns]);
+
+  // 2. Guards
   if (error) {
     return (
       <div className="error-container">
@@ -174,11 +223,17 @@ const DataTable = memo(() => {
                 return (
                   <th
                     key={col.key || `col-${index}`}
-                    className={`table-header ${isSortable ? "clickable" : ""}`}
+                    className={`table-header ${isSortable ? "clickable" : ""} ${
+                      col.sticky ? "is-sticky" : ""
+                    } ${col.sticky === "right" ? "is-sticky-right" : ""}`}
                     onClick={() => isSortable && onSort && onSort(col.key)}
                     aria-sort={getSortAria(col.key)}
                     role="columnheader"
-                    style={{ width: col.width }}
+                    style={{
+                      width: col.width,
+                      ...col.stickyStyle,
+                      zIndex: col.sticky ? 20 : 10, // Headers need higher z-index
+                    }}
                   >
                     <div className="header-content">
                       <span className="header-label">{col.label}</span>

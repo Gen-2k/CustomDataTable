@@ -9,6 +9,7 @@ export const tableColumns = [
     key: "profile.firstName",
     filterKey: "profile.firstName,profile.lastName",
     width: "250px",
+    sticky: "left",
     render: (row) => (
       <div className="dt-employee-cell">
         <img
