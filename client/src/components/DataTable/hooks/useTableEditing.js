@@ -5,7 +5,14 @@ import { ACTIONS } from "./useTableReducer";
  * useTableEditing - Manages the inline cell editing lifecycle.
  * Handles: Starting edit mode, persistence to server, and metadata (facets).
  */
-export const useTableEditing = (apiUrl, state, dispatch) => {
+export const useTableEditing = ({
+  apiUrl,
+  state,
+  dispatch,
+  columns = [],
+  customRowUpdater,
+  customFacetFetcher,
+}) => {
   const handleStartEdit = useCallback(
     (cellId) => {
       dispatch({ type: ACTIONS.SET_EDIT_CELL, payload: cellId });
@@ -19,6 +26,19 @@ export const useTableEditing = (apiUrl, state, dispatch) => {
 
   const handleSaveEdit = useCallback(
     async (rowId, updates) => {
+      // 1. Custom Update Logic (if provided)
+      if (customRowUpdater) {
+        try {
+          const updatedRecord = await customRowUpdater(rowId, updates);
+          dispatch({ type: ACTIONS.UPDATE_ROW, payload: updatedRecord });
+          return updatedRecord;
+        } catch (err) {
+          dispatch({ type: ACTIONS.SET_EDIT_CELL, payload: null });
+          throw err;
+        }
+      }
+
+      // 2. Default REST Update Logic
       if (!apiUrl) return;
 
       try {
@@ -31,7 +51,6 @@ export const useTableEditing = (apiUrl, state, dispatch) => {
         if (!response.ok) throw new Error("Failed to save changes");
         const updatedRecord = await response.json();
 
-        // Update local state immediately
         dispatch({ type: ACTIONS.UPDATE_ROW, payload: updatedRecord });
 
         // Invalidate facet cache for modified fields so they refresh on next open
@@ -48,34 +67,72 @@ export const useTableEditing = (apiUrl, state, dispatch) => {
         throw err;
       }
     },
-    [apiUrl, dispatch],
+    [apiUrl, dispatch, customRowUpdater],
   );
 
   const fetchFacetOptions = useCallback(
     async (field) => {
-      // Return cached values if available
-      if (state.facetCache[field] || !apiUrl) return;
+      // 0. Cache Check
+      if (state.facetCache[field]) return;
 
-      try {
-        // Derive facet endpoint from base apiUrl
-        const baseUrl = apiUrl.split("/").slice(0, -1).join("/");
-        const response = await fetch(`${baseUrl}/facets/${field}`);
+      const column = columns.find((c) => c.key === field);
 
-        if (response.ok) {
-          const options = await response.json();
+      // 1. Static Options
+      if (column?.options) {
+        dispatch({
+          type: ACTIONS.SET_FACETS,
+          payload: {
+            field,
+            options: column.options.map((v) =>
+              typeof v === "object" ? v : { label: String(v), value: v },
+            ),
+          },
+        });
+        return;
+      }
+
+      // 2. Custom Facet Fetcher
+      if (customFacetFetcher) {
+        try {
+          const options = await customFacetFetcher(field, column);
           dispatch({
             type: ACTIONS.SET_FACETS,
-            payload: {
-              field,
-              options: options.map((v) => ({ label: String(v), value: v })),
-            },
+            payload: { field, options },
           });
+        } catch (err) {
+          console.error(`Custom facet fetch failed for ${field}:`, err);
         }
-      } catch (err) {
-        console.error(`Facet fetch failed for ${field}:`, err);
+        return;
+      }
+
+      // 3. Dynamic URL (Column specific or Inferred)
+      let fetchUrl = column?.optionsUrl;
+
+      if (!fetchUrl && apiUrl) {
+        // Fallback: Try to infer from base API URL (Legacy Support)
+        const baseUrl = apiUrl.split("/").slice(0, -1).join("/");
+        fetchUrl = `${baseUrl}/facets/${field}`;
+      }
+
+      if (fetchUrl) {
+        try {
+          const response = await fetch(fetchUrl);
+          if (response.ok) {
+            const options = await response.json();
+            dispatch({
+              type: ACTIONS.SET_FACETS,
+              payload: {
+                field,
+                options: options.map((v) => ({ label: String(v), value: v })),
+              },
+            });
+          }
+        } catch (err) {
+          console.error(`Facet fetch failed for ${field}:`, err);
+        }
       }
     },
-    [apiUrl, state.facetCache, dispatch],
+    [apiUrl, state.facetCache, dispatch, columns, customFacetFetcher],
   );
 
   return {

@@ -24,7 +24,6 @@ const NavButton = memo(({ onClick, disabled, title, children }) => (
 ));
 
 const Pagination = memo(() => {
-  console.log("[Pagination] Rendered");
   const { currentPage, totalPages, totalRows, pageSize } = useTableData();
   const {
     handlePageChange: onPageChange,

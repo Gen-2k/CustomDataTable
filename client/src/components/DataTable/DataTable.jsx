@@ -94,7 +94,6 @@ const TableRow = memo(
 );
 
 const DataTable = memo(() => {
-  console.log("[DataTable] Rendered");
   const {
     columns: allColumns = [],
     data = [],
@@ -116,7 +115,6 @@ const DataTable = memo(() => {
     handleStartEdit,
     handleCancelEdit,
     handleSaveEdit,
-    handleToggleColumn,
   } = useTableActions();
 
   // 1. Guards

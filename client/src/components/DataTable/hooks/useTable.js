@@ -59,7 +59,14 @@ const useTable = (config = {}) => {
   const filterActions = useTableFilters(state, dispatch);
 
   // Handles all Write operations (editing cells) and facet metadata
-  const editActions = useTableEditing(apiUrl, state, dispatch);
+  const editActions = useTableEditing({
+    apiUrl,
+    state,
+    dispatch,
+    columns: config.columns, // Pass columns from config
+    customRowUpdater: config.customRowUpdater,
+    customFacetFetcher: config.customFacetFetcher,
+  });
 
   // 3. Return a unified interface for the TableProvider
   return {

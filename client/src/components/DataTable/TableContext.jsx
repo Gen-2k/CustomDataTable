@@ -24,16 +24,19 @@ export const TableProvider = ({
   requestMapper,
   responseMapper,
   customFetcher,
+  customRowUpdater,
+  customFacetFetcher,
 }) => {
-  console.log("[TableProvider] Rendered");
-
   // Pass configuration to the universal hook
   const tableData = useTable({
     apiUrl,
     initialPageSize,
+    columns, // Explicitly pass columns to hook
     requestMapper,
     responseMapper,
     customFetcher,
+    customRowUpdater,
+    customFacetFetcher,
   });
 
   const {

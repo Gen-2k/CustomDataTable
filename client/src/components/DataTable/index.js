@@ -1,4 +1,5 @@
 export { default as DataTable } from "./DataTable";
+export { default as ZTable } from "./ZTable";
 export { default as DataTableSearch } from "./DataTableSearch";
 export { default as Pagination } from "./Pagination";
 export {

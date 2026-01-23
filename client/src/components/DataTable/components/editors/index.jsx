@@ -8,7 +8,7 @@ const EditorRegistry = {
   date: (props) => <BaseInput {...props} type="date" />,
   select: SmartSelect,
   textarea: LongTextEditor,
-  tags: SmartSelect, // Now unified into SmartSelect
+  tags: SmartSelect,
 };
 
 export const resolveEditor = (column) => {
