@@ -201,8 +201,15 @@ const DataTable = memo(() => {
     <div
       className={`dt-scope table-wrapper-main ${loading ? "is-loading" : ""}`}
     >
+      {/* Full Loading Overlay only for large updates */}
+      {loading && data.length > 0 && (
+        <div className="loading-overlay">
+          <div className="loading-spinner" />
+        </div>
+      )}
+
       <div className="table-scroll-container">
-        {/* Premium Progress Bar for re-fetching/searching/sorting */}
+        {/* Top Progress Bar - Visible when fetching/sorting even if spinner is hidden */}
         {loading && data.length > 0 && (
           <div
             className="loading-progress-bar"
@@ -212,7 +219,6 @@ const DataTable = memo(() => {
             <div className="loading-bar-inner" />
           </div>
         )}
-
         <table className="custom-table" aria-busy={loading}>
           <thead>
             <tr>
@@ -286,13 +292,6 @@ const DataTable = memo(() => {
           </tbody>
         </table>
       </div>
-
-      {/* Full Loading Overlay only for large updates or if requested */}
-      {loading && data.length > 0 && (
-        <div className="loading-overlay">
-          <div className="loading-spinner" />
-        </div>
-      )}
 
       <Pagination />
     </div>

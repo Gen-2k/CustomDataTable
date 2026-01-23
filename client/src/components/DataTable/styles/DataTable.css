@@ -16,7 +16,8 @@
 }
 
 .table-scroll-container {
-  overflow-x: auto;
+  overflow: auto; /* Handles both X and Y */
+  max-height: calc(100vh - 200px); /* Adjust based on your layout needs */
   position: relative;
   scrollbar-width: thin;
   scrollbar-color: var(--dt-scrollbar-thumb) transparent;

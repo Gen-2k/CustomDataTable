@@ -5,17 +5,17 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  background-color: var(--dt-bg-secondary);
-  border-top: 1px solid var(--dt-border-color); 
+  padding: 16px 24px;
+  background-color: var(--dt-bg-main);
+  border-top: 1px solid var(--dt-border-light);
   color: var(--dt-text-secondary);
-  font-size: 13.5px;
+  font-size: 13px;
 }
 
 .pagination-controls {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 /* Page Info */
@@ -26,16 +26,14 @@
 
 .pagination-info .highlight {
   color: var(--dt-text-main);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* Page Size Selector */
 .page-size-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding-right: 32px;
-  border-right: 1px solid var(--dt-border-color);
+  gap: 12px;
 }
 
 .selector-label {
@@ -48,86 +46,65 @@
 
 .page-size-select {
   appearance: none;
-  background-color: var(--dt-bg-main);
+  background-color: var(--dt-bg-secondary);
   border: 1px solid var(--dt-border-color);
-  border-radius: var(--dt-radius-sm);
-  padding: 4px 12px;
+  border-radius: var(--dt-radius-md);
+  padding: 6px 32px 6px 12px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--dt-text-secondary);
+  color: var(--dt-text-main);
   cursor: pointer;
   outline: none;
   transition: all var(--dt-transition-fast);
-  min-width: 65px;
-  text-align: center;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 6px center;
-  background-size: 10px;
+  background-position: right 10px center;
+  background-size: 12px;
 }
 
 .page-size-select:hover {
   border-color: var(--dt-text-muted);
-}
-
-.page-size-select:focus {
-  border-color: var(--dt-primary);
-  box-shadow: var(--dt-focus-ring);
+  background-color: var(--dt-bg-header);
 }
 
 /* Navigation Buttons */
 .pagination-nav {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  padding-left: 24px;
+  border-left: 1px solid var(--dt-border-light);
 }
 
 .btn-group {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .page-btn {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: var(--dt-bg-main);
   border: 1px solid var(--dt-border-color);
-  border-radius: var(--dt-radius-sm);
+  border-radius: var(--dt-radius-md);
   color: var(--dt-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--dt-transition-fast);
 }
 
 .page-btn:hover:not(:disabled) {
   border-color: var(--dt-primary);
   color: var(--dt-primary);
   background-color: var(--dt-primary-light);
-  transform: translateY(-1px);
-}
-
-.page-btn:focus-visible {
-  outline: none;
-  border-color: var(--dt-primary);
-  box-shadow: var(--dt-focus-ring);
-}
-
-.page-btn:active:not(:disabled) {
-  transform: translateY(0);
 }
 
 .page-btn:disabled {
   cursor: not-allowed;
-  background-color: transparent;
-  color: var(--dt-text-muted);
-  border-color: var(--dt-border-light);
   opacity: 0.4;
-}
-
-.page-btn {
-  user-select: none;
+  background-color: var(--dt-bg-secondary);
 }
 
 /* Page Jump Input */
@@ -136,22 +113,22 @@
   align-items: center;
   gap: 8px;
   color: var(--dt-text-muted);
-  font-size: 13px;
   font-weight: 500;
+  font-size: 13px;
 }
 
 .page-input {
-  width: 44px;
-  height: 34px;
+  width: 40px;
+  height: 32px;
   text-align: center;
-  background-color: var(--dt-bg-main);
+  background-color: var(--dt-bg-secondary);
   border: 1px solid var(--dt-border-color);
-  border-radius: var(--dt-radius-sm);
+  border-radius: var(--dt-radius-md);
   font-size: 13px;
   font-weight: 700;
   color: var(--dt-text-main);
   outline: none;
-  transition: all 0.2s;
+  transition: all var(--dt-transition-fast);
 }
 
 .page-input:focus {
