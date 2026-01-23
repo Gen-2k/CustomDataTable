@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ZTable } from "./components/DataTable";
+import DataTable from "./components/DataTable"; // Using the new default export
 import { tableColumns } from "./config/tableColumns";
 
 const API_BASE_URL = "http://localhost:5000/api/users";
@@ -10,7 +10,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="app-content">
-        <ZTable
+        <DataTable
           apiUrl={API_BASE_URL}
           columns={columns}
           initialPageSize={10}
