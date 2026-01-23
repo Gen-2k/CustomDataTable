@@ -16,7 +16,7 @@ const LongTextEditor = ({ value, onCommit, onCancel, column, isSaving }) => {
 
   const handleKeyDown = (e) => {
     if (isSaving) return;
-    if (e.key === "Enter" && e.ctrlKey) {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       onCommit(text);
     }
@@ -27,57 +27,70 @@ const LongTextEditor = ({ value, onCommit, onCancel, column, isSaving }) => {
   };
 
   return ReactDOM.createPortal(
-    <div className="dt-pro-modal-overlay" onClick={!isSaving ? onCancel : undefined}>
+    <div
+      className="dt-scope dt-pro-modal-overlay"
+      onClick={!isSaving ? onCancel : undefined}
+    >
       <div className="dt-pro-modal-card" onClick={(e) => e.stopPropagation()}>
         <div className="dt-pro-modal-header">
-          <div className="dt-pro-modal-title">Edit {column.label}</div>
-          <button 
-            className="dt-pro-modal-close" 
-            onClick={onCancel} 
+          <div className="dt-pro-modal-title">
+            <span className="dt-label-pill">{column.label}</span>
+            <span className="dt-title-text">Edit Content</span>
+          </div>
+          <button
+            className="dt-pro-modal-close"
+            onClick={onCancel}
             disabled={isSaving}
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
-        
+
         <div className="dt-pro-modal-body">
           <textarea
             autoFocus
             disabled={isSaving}
-            className="dt-pro-modal-textarea"
+            className="dt-pro-modal-textarea dt-scrollbar"
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type your content here..."
+            placeholder={`Enter ${column.label.toLowerCase()}...`}
           />
         </div>
 
         <div className="dt-pro-modal-footer">
-          <div className="dt-pro-modal-hint">
-            <span>Press <strong>Ctrl + Enter</strong> to save</span>
+          <div className="dt-pro-modal-meta">
+            <div className="dt-char-count">
+              <strong>{text.length}</strong> characters
+            </div>
+            <div className="dt-pro-modal-hint">
+              <span>
+                Press <strong>⌘/Ctrl + Enter</strong> to save
+              </span>
+            </div>
           </div>
           <div className="dt-pro-modal-actions">
-            <button 
-              className="dt-pro-btn dt-pro-btn-secondary" 
-              onClick={onCancel} 
+            <button
+              className="dt-pro-btn dt-pro-btn-secondary"
+              onClick={onCancel}
               disabled={isSaving}
             >
-              Discard
+              Cancel
             </button>
-            <button 
-              className="dt-pro-btn dt-pro-btn-primary" 
-              onClick={handleSubmit} 
+            <button
+              className="dt-pro-btn dt-pro-btn-primary"
+              onClick={handleSubmit}
               disabled={isSaving}
             >
               {isSaving ? (
                 <>
-                  <div className="btn-spinner" style={{ marginRight: 8 }} />
-                  Saving...
+                  <div className="btn-spinner" />
+                  <span>Saving...</span>
                 </>
               ) : (
                 <>
-                  <Check size={16} style={{ marginRight: 8 }} />
-                  Apply Changes
+                  <Check size={16} />
+                  <span>Save Changes</span>
                 </>
               )}
             </button>
@@ -85,7 +98,7 @@ const LongTextEditor = ({ value, onCommit, onCancel, column, isSaving }) => {
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

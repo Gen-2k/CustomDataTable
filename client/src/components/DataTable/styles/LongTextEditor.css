@@ -14,28 +14,46 @@
 .dt-pro-modal-card {
   background: var(--dt-bg-main);
   width: 100%;
-  max-width: 600px;
+  max-width: 800px; /* Expanded for long content */
+  max-height: 90vh; /* Don't exceed screen */
   border-radius: var(--dt-radius-lg);
-  box-shadow: var(--dt-shadow-lg); 
+  box-shadow: var(--dt-shadow-xl);
   overflow: hidden;
-  border: 1px solid var(--dt-border-light);
+  border: 1px solid var(--dt-border-color);
   display: flex;
   flex-direction: column;
   animation: dt-pro-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .dt-pro-modal-header {
-  padding: 20px 24px;
+  padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--dt-border-light);
 }
 
 .dt-pro-modal-title {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dt-label-pill {
+  background: var(--dt-primary-light);
+  color: var(--dt-primary);
+  font-size: 11px;
   font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dt-title-text {
+  font-size: 16px;
+  font-weight: 600;
   color: var(--dt-text-main);
-  letter-spacing: -0.01em;
 }
 
 .dt-pro-modal-close {
@@ -43,49 +61,73 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  padding: 6px;
+  padding: 8px;
   border-radius: var(--dt-radius-md);
   display: flex;
   align-items: center;
-  transition: all 0.2s;
+  transition: all var(--dt-transition-fast);
 }
 
 .dt-pro-modal-close:hover {
-  background: var(--dt-bg-header);
+  background: var(--dt-bg-secondary);
   color: var(--dt-text-main);
 }
 
 .dt-pro-modal-body {
-  padding: 0 24px;
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .dt-pro-modal-textarea {
   width: 100%;
-  height: 240px;
-  padding: 16px;
-  font-family: inherit;
+  min-height: 350px; /* Much taller */
+  max-height: 500px;
+  padding: 20px;
+  font-family: var(--dt-font-family);
   font-size: 15px;
-  line-height: 1.6;
-  color: var(--dt-text-secondary);
+  line-height: 1.7;
+  color: var(--dt-text-main);
   background: var(--dt-bg-secondary);
   border: 1px solid var(--dt-border-color);
   border-radius: var(--dt-radius-md);
-  resize: vertical;
+  resize: vertical; /* Allow user more choice */
   outline: none;
-  transition: all 0.2s;
+  transition:
+    border-color var(--dt-transition-fast),
+    box-shadow var(--dt-transition-fast);
 }
 
 .dt-pro-modal-textarea:focus {
   background: var(--dt-bg-main);
   border-color: var(--dt-primary);
-  box-shadow: var(--dt-shadow-sm);
+  box-shadow: var(--dt-focus-ring);
 }
 
 .dt-pro-modal-footer {
-  padding: 24px;
+  padding: 16px 20px;
+  background: var(--dt-bg-secondary);
+  border-top: 1px solid var(--dt-border-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.dt-pro-modal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dt-char-count {
+  font-size: 11px;
+  color: var(--dt-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dt-char-count strong {
+  color: var(--dt-text-secondary);
 }
 
 .dt-pro-modal-hint {
@@ -93,44 +135,62 @@
   color: var(--dt-text-muted);
 }
 
+.dt-pro-modal-hint strong {
+  color: var(--dt-text-secondary);
+}
+
 .dt-pro-modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .dt-pro-btn {
-  padding: 10px 20px;
-  font-size: 14px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 600;
   border-radius: var(--dt-radius-md);
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: all 0.2s;
+  gap: 8px; /* Consistent gap between icon and text */
+  transition: all var(--dt-transition-normal);
   border: 1px solid transparent;
 }
 
 .dt-pro-btn-secondary {
-  background: var(--dt-bg-header);
+  background: var(--dt-bg-main);
+  border: 1px solid var(--dt-border-color);
   color: var(--dt-text-secondary);
 }
 
-.dt-pro-btn-secondary:hover {
-  background: var(--dt-border-color);
+.dt-pro-btn-secondary:hover:not(:disabled) {
+  background: var(--dt-bg-header);
+  border-color: var(--dt-text-muted);
 }
 
 .dt-pro-btn-primary {
   background: var(--dt-primary);
-  color: var(--dt-bg-main);
+  color: #ffffff;
 }
 
-.dt-pro-btn-primary:hover {
+.dt-pro-btn-primary:hover:not(:disabled) {
   background: var(--dt-primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--dt-shadow-md);
 }
 
+.dt-pro-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @keyframes dt-pro-slide-in {
-  from { transform: scale(0.95) translateY(10px); opacity: 0; }
-  to { transform: scale(1) translateY(0); opacity: 1; }
+  from {
+    transform: scale(0.98) translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }

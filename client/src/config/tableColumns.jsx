@@ -44,6 +44,13 @@ export const tableColumns = [
     dynamicOptions: true,
   },
   {
+    label: "Designation",
+    key: "work.title",
+    filterType: "text",
+    editable: true,
+    dynamicOptions: true,
+  },
+  {
     label: "City",
     key: "contact.address.city",
     filterType: "text",
@@ -127,31 +134,10 @@ export const tableColumns = [
       return <span style={{ fontWeight: "bold", color }}>{score}</span>;
     },
   },
-  {
-    label: "Work Mode",
-    key: "work.isRemote",
-    filterType: "boolean",
-    editable: true,
-    render: (r) => (
-      <span
-        className={`dt-badge ${
-          r.work.isRemote ? "dt-badge-purple" : "dt-badge-success"
-        }`}
-      >
-        {r.work.isRemote ? "Remote" : "Office"}
-      </span>
-    ),
-  },
+
   {
     label: "Nationality",
     key: "profile.nationality",
-    filterType: "text",
-    editable: true,
-    dynamicOptions: true,
-  },
-  {
-    label: "Designation",
-    key: "work.title",
     filterType: "text",
     editable: true,
     dynamicOptions: true,
