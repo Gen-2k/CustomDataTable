@@ -239,7 +239,7 @@ const BaseTable = memo(() => {
                     style={{
                       width: col.width,
                       ...col.stickyStyle,
-                      zIndex: col.sticky ? 20 : 10, // Headers need higher z-index
+                      zIndex: col.sticky ? 20 : 10,
                     }}
                   >
                     <div className="header-content">
