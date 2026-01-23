@@ -4,10 +4,6 @@ import { Check, X, Plus } from "lucide-react";
 import { usePortalPosition } from "./usePortalPosition";
 import "../../styles/SmartSelect.css";
 
-/**
- * Single Unified Selection Component
- * Handles both single selection (Select) and multiple selection (Tags/Pills)
- */
 const SmartSelect = ({
   value,
   options = [],
@@ -20,7 +16,6 @@ const SmartSelect = ({
 }) => {
   const isMultiple = column.editorType === "tags" || Array.isArray(value);
 
-  // Initialize tags if multiple, otherwise initialize search with value
   const [tags, setTags] = useState(() => {
     if (!isMultiple) return [];
     return Array.isArray(value) ? [...new Set(value)] : value ? [value] : [];
@@ -34,7 +29,6 @@ const SmartSelect = ({
   const inputRef = useRef(null);
   const coords = usePortalPosition(containerRef);
 
-  // Synchronize state when value changes externally
   useEffect(() => {
     if (isMultiple) {
       setTags(
@@ -48,7 +42,6 @@ const SmartSelect = ({
 
   const filteredOptions = useMemo(() => {
     const query = search.toLowerCase();
-    // Filter out already selected tags if in multiple mode
     const available = isMultiple
       ? options.filter((opt) => !tags.includes(opt.value))
       : options;

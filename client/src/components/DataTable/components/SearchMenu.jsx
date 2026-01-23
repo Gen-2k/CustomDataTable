@@ -1,8 +1,5 @@
 import { History, Filter, ChevronRight } from "lucide-react";
 
-/**
- * Combined component for Recent Searches and Field Selection list
- */
 const SearchMenu = ({
   recentSearches,
   onRecentSelect,
@@ -11,7 +8,6 @@ const SearchMenu = ({
 }) => {
   return (
     <>
-      {/* Recent Searches Section */}
       {recentSearches.length > 0 && (
         <div className="dt-dropdown-section">
           <div className="dt-section-header">
@@ -29,7 +25,6 @@ const SearchMenu = ({
         </div>
       )}
 
-      {/* Field List Section */}
       <div className="dt-dropdown-section">
         <div className="dt-section-header">
           <Filter size={12} /> Add Filter

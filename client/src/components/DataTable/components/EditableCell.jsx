@@ -2,10 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useTableData, useTableActions } from "../TableContext";
 import { resolveEditor } from "./editors";
 
-/**
- * EditableCell - Manages the lifecycle of an inline edit.
- * Uses the Editor Registry to render the correct UI for each data type.
- */
 const EditableCell = ({
   value: initialValue,
   row,
@@ -21,17 +17,15 @@ const EditableCell = ({
   const { facetCache } = useTableData();
   const { fetchFacetOptions } = useTableActions();
 
-  // Immediate State Sync: When we start editing, ensure internal 'val' matches latest 'initialValue'
   if (isEditing && !prevIsEditing) {
     setPrevIsEditing(true);
     setVal(initialValue);
-    setIsSaving(false); // Reset state when opening
+    setIsSaving(false);
   } else if (!isEditing && prevIsEditing) {
     setPrevIsEditing(false);
-    setIsSaving(false); // Reset state when closing
+    setIsSaving(false);
   }
 
-  // Handle metadata fetch
   useEffect(() => {
     if (isEditing) {
       if (column.dynamicOptions && !facetCache[column.key]) {
@@ -55,7 +49,6 @@ const EditableCell = ({
 
     setIsSaving(true);
     try {
-      // Type casting logic
       let casted = valueToSave;
       if (
         column.filterType === "number" &&
@@ -71,7 +64,7 @@ const EditableCell = ({
     } catch (err) {
       console.error("Save failed in cell:", err);
     } finally {
-      setIsSaving(false); // CRITICAL: Stop loading in both success and error paths
+      setIsSaving(false);
     }
   };
 
@@ -101,7 +94,6 @@ const EditableCell = ({
         ]
       : []);
 
-  // Separate Logic: isLoading is for metadata, isSaving is for the transaction
   const isMetadataLoading = column.dynamicOptions && !facetCache[column.key];
 
   return (

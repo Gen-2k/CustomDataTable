@@ -126,7 +126,6 @@ const BaseTable = memo(() => {
     handleSaveEdit,
   } = useTableActions();
 
-  // 1. Calculate Sticky Offsets
   const columns = useMemo(() => {
     const visibleCols = allColumns.filter(
       (col) => !hiddenColumns.includes(col.key),
@@ -143,7 +142,6 @@ const BaseTable = memo(() => {
           }
         : {};
       if (isSticky) {
-        // Parse width to number if possible, else default to 150
         const w = parseInt(col.width) || 150;
         leftOffset += w;
       }
@@ -166,7 +164,6 @@ const BaseTable = memo(() => {
     return withLeft;
   }, [allColumns, hiddenColumns]);
 
-  // 2. Guards
   if (error) {
     return (
       <div className="error-container">
@@ -201,14 +198,13 @@ const BaseTable = memo(() => {
     <div
       className={`dt-scope table-wrapper-main ${loading ? "is-loading" : ""}`}
     >
-      {/* Full Loading Overlay only for large updates */}
+
       {loading && data.length > 0 && (
         <div className="loading-overlay">
           <div className="loading-spinner" />
         </div>
       )}
 
-      {/* Top Progress Bar - Fixed at the top of the component wrapper */}
       {loading && data.length > 0 && (
         <div
           className="loading-progress-bar"

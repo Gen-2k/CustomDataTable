@@ -14,8 +14,8 @@
 .dt-pro-modal-card {
   background: var(--dt-bg-main);
   width: 100%;
-  max-width: 800px; /* Expanded for long content */
-  max-height: 90vh; /* Don't exceed screen */
+  max-width: 800px;
+  max-height: 90vh;
   border-radius: var(--dt-radius-lg);
   box-shadow: var(--dt-shadow-xl);
   overflow: hidden;
@@ -81,7 +81,7 @@
 
 .dt-pro-modal-textarea {
   width: 100%;
-  min-height: 350px; /* Much taller */
+  min-height: 350px;
   max-height: 500px;
   padding: 20px;
   font-family: var(--dt-font-family);
@@ -91,7 +91,7 @@
   background: var(--dt-bg-secondary);
   border: 1px solid var(--dt-border-color);
   border-radius: var(--dt-radius-md);
-  resize: vertical; /* Allow user more choice */
+  resize: vertical;
   outline: none;
   transition:
     border-color var(--dt-transition-fast),
@@ -152,7 +152,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 8px; /* Consistent gap between icon and text */
+  gap: 8px;
   transition: all var(--dt-transition-normal);
   border: 1px solid transparent;
 }

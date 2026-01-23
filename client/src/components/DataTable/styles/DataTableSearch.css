@@ -306,12 +306,12 @@
 }
 
 .dt-search-submit-btn:hover {
-  background-color: #0f172a; /* Deep Midnight Slate */
+  background-color: #0f172a;
   border-color: #0f172a;
 }
 
 .dt-search-submit-btn:active {
-  background-color: #020617; /* Even deeper slate for click */
+  background-color: #020617;
   opacity: 0.9;
 }
 

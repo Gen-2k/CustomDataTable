@@ -55,6 +55,5 @@ export const updateURLFromState = (state) => {
   const query = params.toString();
   const url = `${window.location.pathname}${query ? `?${query}` : ""}`;
 
-  // Use replaceState to avoid cluttering history during active filtering
   window.history.replaceState(null, "", url);
 };

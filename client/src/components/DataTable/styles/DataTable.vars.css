@@ -1,6 +1,5 @@
 /**
  * DataTable Shared Variables & Design Tokens
- * This file centralizes the design tokens so the component is fully self-contained.
  */
 
 :root {
@@ -117,7 +116,7 @@
 .dt-scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--dt-scrollbar-thumb);
   border-radius: 10px;
-  border: 1px solid transparent; /* Gives it a bit of breathing room if needed */
+  border: 1px solid transparent;
   background-clip: content-box;
 }
 

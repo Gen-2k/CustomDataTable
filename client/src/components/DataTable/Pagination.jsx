@@ -38,7 +38,6 @@ const Pagination = memo(() => {
   const handlePageSubmit = () => {
     let page = parseInt(inputPage, 10);
 
-    // Validation Logic
     if (isNaN(page) || page < 1) page = 1;
     if (page > totalPages) page = totalPages;
 
@@ -60,7 +59,6 @@ const Pagination = memo(() => {
 
   return (
     <div className="pagination-container">
-      {/* Record count info */}
       <div className="pagination-info">
         Showing <span className="highlight">{startIdx}</span> to{" "}
         <span className="highlight">{endIdx}</span> of{" "}
@@ -68,7 +66,6 @@ const Pagination = memo(() => {
       </div>
 
       <div className="pagination-controls">
-        {/* Page size selector */}
         <div className="page-size-selector">
           <span className="selector-label">Rows per page:</span>
           <select
@@ -84,7 +81,6 @@ const Pagination = memo(() => {
           </select>
         </div>
 
-        {/* Navigation controls */}
         <div className="pagination-nav">
           <div className="btn-group">
             <NavButton

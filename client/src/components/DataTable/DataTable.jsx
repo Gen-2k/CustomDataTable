@@ -24,7 +24,6 @@ const DataTable = ({
   customRowUpdater,
   customFacetFetcher,
 
-  // Slot for extra content (e.g. Export buttons)
   headerActions,
 }) => {
   return (

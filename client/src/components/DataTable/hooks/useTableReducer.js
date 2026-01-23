@@ -13,9 +13,6 @@ export const ACTIONS = {
   TOGGLE_COLUMN: "TOGGLE_COLUMN",
 };
 
-/**
- * Standard reducer for state management
- */
 export function tableReducer(state, action) {
   switch (action.type) {
     case ACTIONS.TOGGLE_COLUMN:
@@ -65,7 +62,6 @@ export function tableReducer(state, action) {
     case ACTIONS.SYNC_DEBOUNCED_SEARCH:
       return { ...state, debouncedSearchTerm: action.payload, currentPage: 1 };
 
-    // Simplified Edit Cases
     case ACTIONS.SET_EDIT_CELL:
       return { ...state, editingCell: action.payload };
     case ACTIONS.UPDATE_ROW:

@@ -27,11 +27,10 @@ export const TableProvider = ({
   customRowUpdater,
   customFacetFetcher,
 }) => {
-  // Pass configuration to the universal hook
   const tableData = useTable({
     apiUrl,
     initialPageSize,
-    columns, // Explicitly pass columns to hook
+    columns,
     requestMapper,
     responseMapper,
     customFetcher,

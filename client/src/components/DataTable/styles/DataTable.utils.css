@@ -1,6 +1,6 @@
 /* --- DataTable Common Rendering Components --- */
 
-/* Info Stack Pattern (e.g. User Profile) */
+/* Info Stack Pattern */
 .dt-employee-cell {
   display: flex;
   align-items: center;

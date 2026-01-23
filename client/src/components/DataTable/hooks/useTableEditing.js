@@ -26,7 +26,6 @@ export const useTableEditing = ({
 
   const handleSaveEdit = useCallback(
     async (rowId, updates) => {
-      // 1. Custom Update Logic (if provided)
       if (customRowUpdater) {
         try {
           const updatedRecord = await customRowUpdater(rowId, updates);
@@ -38,7 +37,6 @@ export const useTableEditing = ({
         }
       }
 
-      // 2. Default REST Update Logic
       if (!apiUrl) return;
 
       try {
@@ -53,7 +51,6 @@ export const useTableEditing = ({
 
         dispatch({ type: ACTIONS.UPDATE_ROW, payload: updatedRecord });
 
-        // Invalidate facet cache for modified fields so they refresh on next open
         Object.keys(updates).forEach((field) => {
           dispatch({
             type: ACTIONS.SET_FACETS,
@@ -72,12 +69,9 @@ export const useTableEditing = ({
 
   const fetchFacetOptions = useCallback(
     async (field) => {
-      // 0. Cache Check
       if (state.facetCache[field]) return;
 
       const column = columns.find((c) => c.key === field);
-
-      // 1. Static Options
       if (column?.options) {
         dispatch({
           type: ACTIONS.SET_FACETS,
@@ -91,7 +85,6 @@ export const useTableEditing = ({
         return;
       }
 
-      // 2. Custom Facet Fetcher
       if (customFacetFetcher) {
         try {
           const options = await customFacetFetcher(field, column);
@@ -105,11 +98,9 @@ export const useTableEditing = ({
         return;
       }
 
-      // 3. Dynamic URL (Column specific or Inferred)
       let fetchUrl = column?.optionsUrl;
 
       if (!fetchUrl && apiUrl) {
-        // Fallback: Try to infer from base API URL (Legacy Support)
         const baseUrl = apiUrl.split("/").slice(0, -1).join("/");
         fetchUrl = `${baseUrl}/facets/${field}`;
       }

@@ -1,10 +1,6 @@
 import { useCallback } from "react";
 import { ACTIONS } from "./useTableReducer";
 
-/**
- * useTableFilters - Manages user interactions that modify the dataset's view.
- * Handles: Sorting, Global Search Tokens, Column Filters, and Pagination.
- */
 export const useTableFilters = (state, dispatch) => {
   const handleSort = useCallback(
     (key) => {

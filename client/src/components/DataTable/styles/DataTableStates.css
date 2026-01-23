@@ -1,17 +1,17 @@
 /* --- Data Table States & Loading Patterns --- */
 
 .loading-overlay {
-  position: absolute; /* Scoped to the table container */
+  position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100; /* Above table but inside wrapper */
+  z-index: 100;
   pointer-events: all;
   background-color: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(2px);
   animation: dt-fade-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: var(--dt-radius-lg); /* Match the table's rounded corners */
+  border-radius: var(--dt-radius-lg);
 }
 
 .loading-spinner {

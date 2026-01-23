@@ -20,13 +20,6 @@ const DEFAULT_RESPONSE_MAPPER = (res) => ({
   totalPages: res?.meta?.totalPages ?? 1,
 });
 
-/**
- * useTableFetch - Handles data synchronization with the server.
- * Responsible for:
- * 1. Building API requests from local state.
- * 2. Handling race conditions via AbortController.
- * 3. Mapping responses to the table's state.
- */
 export const useTableFetch = ({
   apiUrl,
   state,
@@ -42,7 +35,6 @@ export const useTableFetch = ({
     configRef.current = { requestMapper, responseMapper, customFetcher };
   }, [requestMapper, responseMapper, customFetcher]);
 
-  // Sync state to URL
   useEffect(() => {
     updateURLFromState(state);
   }, [
@@ -54,7 +46,6 @@ export const useTableFetch = ({
   ]);
 
   const fetchData = useCallback(async () => {
-    // 1. Cancel previous pending searches (Race condition prevention)
     if (abortControllerRef.current) abortControllerRef.current.abort();
     const controller = new AbortController();
     abortControllerRef.current = controller;
@@ -68,7 +59,6 @@ export const useTableFetch = ({
         customFetcher: currentFetcher,
       } = configRef.current;
 
-      // Map local state to API parameters
       const apiParams = currentMapper({
         currentPage: state.currentPage,
         pageSize: state.pageSize,
@@ -121,13 +111,10 @@ export const useTableFetch = ({
     dispatch,
   ]);
 
-  // Main Fetch Effect
   useEffect(() => {
     fetchData();
     return () => abortControllerRef.current?.abort();
   }, [fetchData]);
-
-  // Search Debouncing Logic
   useEffect(() => {
     const searchString = state.searchTerm.join(" ");
     if (searchString === state.debouncedSearchTerm) return;

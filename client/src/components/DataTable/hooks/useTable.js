@@ -5,11 +5,6 @@ import { useTableFilters } from "./useTableFilters";
 import { useTableEditing } from "./useTableEditing";
 import { getInitialStateFromURL } from "../utils/urlSync";
 
-/**
- * useTable - The orchestrator hook for the DataTable system.
- * It initializes the shared state and delegates specialized logic
- * to micro-hooks for better maintainability.
- */
 const useTable = (config = {}) => {
   const {
     apiUrl,
@@ -19,7 +14,6 @@ const useTable = (config = {}) => {
     customFetcher,
   } = config;
 
-  // 1. Core State Initialization with URL Persistence
   const initialState = useMemo(
     () =>
       getInitialStateFromURL({
@@ -43,9 +37,6 @@ const useTable = (config = {}) => {
 
   const [state, dispatch] = useReducer(tableReducer, initialState);
 
-  // 2. Specialized Logic Delegation
-
-  // Handles all API Read operations and search debouncing
   const { fetchData } = useTableFetch({
     apiUrl,
     state,
@@ -55,25 +46,21 @@ const useTable = (config = {}) => {
     customFetcher,
   });
 
-  // Handles all UI interactions (sorting, filtering, paging)
   const filterActions = useTableFilters(state, dispatch);
 
-  // Handles all Write operations (editing cells) and facet metadata
   const editActions = useTableEditing({
     apiUrl,
     state,
     dispatch,
-    columns: config.columns, // Pass columns from config
+    columns: config.columns,
     customRowUpdater: config.customRowUpdater,
     customFacetFetcher: config.customFacetFetcher,
   });
-
-  // 3. Return a unified interface for the TableProvider
   return {
     ...state,
     ...filterActions,
     ...editActions,
-    fetchData, // Exposed for manual refreshes
+    fetchData,
   };
 };
 
