@@ -235,7 +235,7 @@ const SmartSelect = ({
             </div>
           </div>
           {dropdownVisible && !isSaving && (
-            <div className="smart-select-dropdown portal">
+            <div className="smart-select-dropdown portal dt-scrollbar">
               {isLoading ? (
                 <div className="smart-select-info">Loading...</div>
               ) : filteredOptions.length === 0 ? (

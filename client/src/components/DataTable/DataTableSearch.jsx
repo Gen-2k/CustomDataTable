@@ -273,7 +273,7 @@ const DataTableSearch = ({ placeholder = "Search..." }) => {
         </div>
 
         {isOpen && (
-          <div className="dt-search-dropdown">
+          <div className="dt-search-dropdown dt-scrollbar">
             {!activeField ? (
               <SearchMenu
                 recentSearches={recentSearches}

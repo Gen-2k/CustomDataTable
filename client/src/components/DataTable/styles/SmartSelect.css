@@ -90,7 +90,6 @@
 .smart-select-dropdown.portal {
   max-height: 200px;
   overflow-y: auto;
-  scrollbar-width: thin;
 }
 
 .smart-select-option {

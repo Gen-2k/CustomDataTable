@@ -34,7 +34,7 @@ const ColumnSettings = () => {
           <div className="dt-column-settings-header">
             <h4>Display Columns</h4>
           </div>
-          <div className="dt-column-settings-list">
+          <div className="dt-column-settings-list dt-scrollbar">
             {allColumns.map((col) => {
               const isVisible = !hiddenColumns.includes(col.key);
               return (

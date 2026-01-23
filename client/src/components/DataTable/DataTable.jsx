@@ -208,17 +208,18 @@ const DataTable = memo(() => {
         </div>
       )}
 
-      <div className="table-scroll-container">
-        {/* Top Progress Bar - Visible when fetching/sorting even if spinner is hidden */}
-        {loading && data.length > 0 && (
-          <div
-            className="loading-progress-bar"
-            role="progressbar"
-            aria-label="Loading data"
-          >
-            <div className="loading-bar-inner" />
-          </div>
-        )}
+      {/* Top Progress Bar - Fixed at the top of the component wrapper */}
+      {loading && data.length > 0 && (
+        <div
+          className="loading-progress-bar"
+          role="progressbar"
+          aria-label="Loading data"
+        >
+          <div className="loading-bar-inner" />
+        </div>
+      )}
+
+      <div className="table-scroll-container dt-scrollbar">
         <table className="custom-table" aria-busy={loading}>
           <thead>
             <tr>
