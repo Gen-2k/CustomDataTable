@@ -63,17 +63,17 @@ export const tableColumns = [
     filterType: "text",
     editable: true,
     dynamicOptions: true,
-    render: (r) => (
-      <span
-        className={`dt-badge ${
-          r.work.contractType === "Full-Time"
-            ? "dt-badge-info"
-            : "dt-badge-warning"
-        }`}
-      >
-        {r.work.contractType}
-      </span>
-    ),
+    // render: (r) => (
+    //   <span
+    //     className={`dt-badge ${
+    //       r.work.contractType === "Full-Time"
+    //         ? "dt-badge-info"
+    //         : "dt-badge-warning"
+    //     }`}
+    //   >
+    //     {r.work.contractType}
+    //   </span>
+    // ),
   },
   {
     label: "Skills",
@@ -127,12 +127,12 @@ export const tableColumns = [
     key: "finance.creditScore",
     filterType: "number",
     editable: true,
-    render: (r) => {
-      const score = r.finance.creditScore;
-      const color =
-        score >= 750 ? "#16a34a" : score >= 650 ? "#d97706" : "#dc2626";
-      return <span style={{ fontWeight: "bold", color }}>{score}</span>;
-    },
+    // render: (r) => {
+    //   const score = r.finance.creditScore;
+    //   const color =
+    //     score >= 750 ? "#16a34a" : score >= 650 ? "#d97706" : "#dc2626";
+    //   return <span style={{ fontWeight: "bold", color }}>{score}</span>;
+    // },
   },
 
   {
