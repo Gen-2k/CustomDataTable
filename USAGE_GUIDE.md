@@ -1,137 +1,158 @@
-# ZTable Usage Guide
+# 📘 Developer Usage Guide: DataTable Component
 
-The `ZTable` component is a production-ready, drop-in data grid solution. It unifies the Table Provider, Search, and Grid into a single component.
+This guide covers everything a developer needs to know to integrate, customize, and extend the `DataTable` component.
+
+---
 
 ## 1. Installation
 
-Copy the `src/components/DataTable` folder into your project.
+The `DataTable` is designed as a **self-contained feature folder**. To use it in a new project:
 
-## 2. Basic Usage (The "Drop-in" Scenario)
+1. Copy the `src/components/DataTable` directory.
+2. Ensure you have `lucide-react` installed:
+   ```bash
+   npm install lucide-react
+   ```
 
-If you have a standard REST API that follows the convention:
+---
 
-- **Data:** `GET /api/users`
-- **Metadata/Options:** `GET /api/facets/{fieldName}` (Optional)
+## 2. Standard Integration
 
-You can use the table with zero configuration:
+The simplest way to use the table is to import the folder (which uses the `index.js` entry point).
 
 ```jsx
-import { ZTable } from "./components/DataTable";
+import DataTable from "./components/DataTable";
 
-const columns = [
-  { label: "Name", key: "name", filterType: "text" },
-  { label: "Role", key: "role", filterType: "text", dynamicOptions: true },
-];
+function MyPage() {
+  const columns = [
+    { key: "firstName", label: "First Name", sortable: true },
+    { key: "email", label: "Email Address" },
+    { key: "role", label: "Permission", filterType: "text" },
+  ];
 
-function EmployeePage() {
   return (
-    <ZTable
-      apiUrl="https://my-api.com/api/employees"
-      columns={columns}
-      searchPlaceholder="Search employees..."
-    />
+    <DataTable apiUrl="https://api.myapp.com/v1/users" columns={columns} />
   );
 }
 ```
 
 ---
 
-## 3. Advanced Scenarios
+## 3. Configuration Deep-Dive
 
-### Scenario A: Custom Dropdown Options (Static)
+### A. Column Definitions
 
-You don't have an API endpoint for options, just a static list.
+The `columns` array is the most important configuration. Every object represents a column.
 
-```javascript
-/* tableColumns.js */
-export const columns = [
-  {
-    label: "Status",
-    key: "status",
-    editable: true,
-    // Directly provide options
-    options: [
-      { label: "Active", value: "active" },
-      { label: "Inactive", value: "inactive" },
-    ],
-  },
-];
-```
+| Key              | Description                                                         |
+| :--------------- | :------------------------------------------------------------------ |
+| `key`            | (String) JSON key. Supports nested paths like `user.profile.name`.  |
+| `label`          | (String) Display name in header.                                    |
+| `width`          | (String) CSS width (e.g. `200px`, `15%`).                           |
+| `sortable`       | (Boolean) Enables server-side sorting clickable headers.            |
+| `sticky`         | (`"left"` or `"right"`) Freezes the column.                         |
+| `editable`       | (Boolean) Enable inline editing (Double-click to activate).         |
+| `filterType`     | (`"text"`, `"number"`, `"date"`, `"boolean"`) Sets filter logic.    |
+| `editorType`     | (`"select"`, `"tags"`, `"textarea"`, `"date"`) Sets UI for editing. |
+| `options`        | (Array) Static list for selects: `['Admin', 'User']`.               |
+| `dynamicOptions` | (Boolean) Automatically fetch unique values from API.               |
 
-### Scenario B: Custom Dropdown Options (Specific URL)
+### B. Dynamic Options (Facets)
 
-Your options endpoint doesn't match the default naming convention.
+If `dynamicOptions: true` is set, the table will try to fetch a list of possible values for that field.
 
-```javascript
-/* tableColumns.js */
-export const columns = [
-  {
-    label: "Department",
-    key: "dept_id",
-    editable: true,
-    dynamicOptions: true,
-    // Tell the table exactly where to look
-    optionsUrl: "https://my-api.com/v2/reference/departments",
-  },
-];
-```
+- **Default Behavior**: It hits `${apiUrl.parent}/facets/${columnKey}`.
+- **Override**: Use `optionsUrl: "/api/roles"` to point to a specific endpoint.
 
-### Scenario C: Custom Data Fetching (Non-Standard API / GraphQL / Firebase)
+---
 
-Your API response doesn't match the standard shape `{ data: [], meta: { total: 100 } }`.
+## 4. Advanced Data Handling
+
+### Overriding the API Shape (Mappers)
+
+If your API doesn't return `{ data: [], meta: { total: 100 } }`, use a mapper:
 
 ```jsx
-const myResponseMapper = (response) => ({
-  data: response.results, // My API calls it 'results'
-  total: response.count, // My API calls it 'count'
-  totalPages: Math.ceil(response.count / 10),
-});
-
-<ZTable apiUrl="..." columns={columns} responseMapper={myResponseMapper} />;
+<DataTable
+  apiUrl="/users"
+  responseMapper={(res) => ({
+    data: res.results, // Where the rows are
+    total: res.total_records, // Total count for pagination
+    totalPages: res.pages, // Total pages
+  })}
+/>
 ```
 
-### Scenario D: Completely Custom Data Source (No API URL)
+### Manual Data Loading (customFetcher)
 
-You want to load data from LocalStorage or an SDK, not a `fetch` URL.
+Use this for GraphQL, LocalStorage, or specialized SDKs.
 
 ```jsx
-const fetchFromLocalStorage = async (params) => {
-  const allData = JSON.parse(localStorage.getItem("users"));
-  // ... filter and sort logic ...
-  return { data: finalData, meta: { total: finalData.length } };
+const myFetcher = async (params, signal) => {
+  const { page, limit, search } = params;
+  const data = await myApi.query({ page, limit, search }, { signal });
+  return data; // Response mapper will still run on this returned object
 };
 
-<ZTable columns={columns} customFetcher={fetchFromLocalStorage} />;
-```
-
-### Scenario E: Custom Save Logic
-
-You need to do something special when a user edits a cell, like updating a completely different store or using a specific SDK method.
-
-```jsx
-const handleRowUpdate = async (rowId, updates) => {
-  console.log("Saving to Firebase:", rowId, updates);
-  await db.collection("users").doc(rowId).update(updates);
-  return { ...row, ...updates }; // Return the updated object
-};
-
-<ZTable columns={columns} customRowUpdater={handleRowUpdate} />;
+<DataTable customFetcher={myFetcher} />;
 ```
 
 ---
 
-## 4. Header Actions
+## 5. Inline Editing Logic
 
-You can easily inject buttons (like "Export" or "Create New") into the header next to the search bar.
+The table handles the UI for editing, but you can control the **Persistence**.
+
+### Default REST Persistence
+
+By default, the table sends a `PUT` request to `${apiUrl}/${rowId}` with the updated fields in the body.
+
+### Custom Persistence Logic
 
 ```jsx
-<ZTable
-  apiUrl="..."
-  columns={columns}
-  headerActions={
-    <button className="btn-primary" onClick={handleExport}>
-      Export CSV
-    </button>
-  }
-/>
+const handleSave = async (id, updates) => {
+  // Use your own SDK or custom logic
+  const updatedUser = await sdk.users.update(id, updates);
+  toast.success("User updated!");
+  return updatedUser; // Critical: Return the fresh object to update the local table state
+};
+
+<DataTable customRowUpdater={handleSave} />;
 ```
+
+---
+
+## 6. Layout Customization
+
+### Sticky Columns
+
+To handle wide data sets, use the `sticky` property:
+
+```javascript
+{ key: 'actions', label: 'Actions', sticky: 'right', width: '100px' }
+```
+
+### Custom Cell Rendering
+
+You can render anything inside a cell (Avatars, Status Badges, Progress Bars):
+
+```jsx
+{
+  key: "status",
+  label: "Status",
+  render: (row) => (
+    <span className={`badge badge-${row.status}`}>
+      {row.status.toUpperCase()}
+    </span>
+  )
+}
+```
+
+---
+
+## 7. Developer Best Practices
+
+1. **Memoize Columns**: Always use `useMemo` for your columns array to prevent unnecessary re-renders of the entire grid.
+2. **Unique Keys**: Ensure your API data includes a unique `id` or `_id` field.
+3. **CSS Isolation**: Always keep the `styles/` folder nearby. It uses localized tokens that won't interfere with your global app styles.
+4. **Error Boundaries**: While the table has internal error handling, wrapping it in a React Error Boundary is recommended for production.
