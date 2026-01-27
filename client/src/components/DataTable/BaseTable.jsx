@@ -198,7 +198,6 @@ const BaseTable = memo(() => {
     <div
       className={`dt-scope table-wrapper-main ${loading ? "is-loading" : ""}`}
     >
-
       {loading && data.length > 0 && (
         <div className="loading-overlay">
           <div className="loading-spinner" />

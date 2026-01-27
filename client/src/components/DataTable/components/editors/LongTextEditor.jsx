@@ -65,7 +65,7 @@ const LongTextEditor = ({ value, onCommit, onCancel, column, isSaving }) => {
             </div>
             <div className="dt-pro-modal-hint">
               <span>
-                Press <strong>⌘/Ctrl + Enter</strong> to save
+                Press <strong>Cmd / Ctrl + Enter</strong> to save
               </span>
             </div>
           </div>
