@@ -1,10 +1,20 @@
 import { useReducer, useMemo, useCallback } from "react";
 import { tableReducer, ACTIONS } from "./useTableReducer";
 import { useTableFetch } from "./useTableFetch";
-import { useTableFilters } from "./useTableFilters";
+import { useTableActions } from "./useTableActions";
 import { useTableEditing } from "./useTableEditing";
 import { getInitialStateFromURL } from "../utils/urlSync";
 
+/**
+ * useTable - The Master Orchestrator Hook.
+ * 
+ * This hook initializes the data table's state machine and wires up 
+ * specialized sub-hooks for fetching, actions (sort/search/page), 
+ * and inline editing.
+ * 
+ * @param {Object} config - Configuration options for the table.
+ * @returns {Object} Full state and action handlers for the table.
+ */
 const useTable = (config = {}) => {
   const {
     apiUrl,
@@ -14,51 +24,46 @@ const useTable = (config = {}) => {
     customFetcher,
     disableUrlSync = false,
     staticData,
+    idKey = "id",
+    disableExpansionSync = false,
+    accordionMode = false,
   } = config;
 
+  /**
+   * Initialize State. 
+   * If URL sync is enabled, we derive the state from query parameters.
+   */
   const initialState = useMemo(
-    () =>
-      disableUrlSync
-        ? {
-            data: staticData || [],
-            totalRows: staticData?.length || 0,
-            totalPages: 1,
-            loading: !staticData,
-            error: null,
-            currentPage: 1,
-            pageSize: initialPageSize,
-            searchTerm: [],
-            debouncedSearchTerm: "",
-            activeFilters: [],
-            sortConfig: { key: null, direction: "asc" },
-            editingCell: null,
-            facetCache: {},
-            hiddenColumns: [],
-            expandedRows: [],
-          }
-        : getInitialStateFromURL({
-            data: [],
-            totalRows: 0,
-            totalPages: 0,
-            loading: true,
-            error: null,
-            currentPage: 1,
-            pageSize: initialPageSize,
-            searchTerm: [],
-            debouncedSearchTerm: "",
-            activeFilters: [],
-            sortConfig: { key: null, direction: "asc" },
-            editingCell: null,
-            facetCache: {},
-            hiddenColumns: [],
-            expandedRows: [],
-          }),
-    [initialPageSize, disableUrlSync, staticData],
+    () => {
+      const baseState = {
+        data: staticData || [],
+        totalRows: staticData?.length || 0,
+        totalPages: 1,
+        loading: !staticData,
+        error: null,
+        currentPage: 1,
+        pageSize: initialPageSize,
+        searchTerm: [],
+        debouncedSearchTerm: "",
+        activeFilters: [],
+        sortConfig: { key: null, direction: "asc" },
+        editingCell: null,
+        facetCache: {},
+        hiddenColumns: [],
+        expandedRows: [],
+        allExpanded: false,
+        idKey,
+        accordionMode,
+      };
+
+      return disableUrlSync ? baseState : getInitialStateFromURL(baseState);
+    },
+    [initialPageSize, disableUrlSync, staticData, idKey, accordionMode],
   );
 
   const [state, dispatch] = useReducer(tableReducer, initialState);
 
-  // 1. Data Fetching
+  // 1. Data Retrieval Engine
   const { fetchData } = useTableFetch({
     apiUrl,
     state,
@@ -68,11 +73,15 @@ const useTable = (config = {}) => {
     customFetcher,
     disableUrlSync,
     staticData,
+    idKey,
+    disableExpansionSync,
+    accordionMode,
   });
 
-  // 2. Specialized Feature Actions
-  const filterActions = useTableFilters(state, dispatch);
+  // 2. Interaction Logic (Sorting, Search, Pagination, Columns)
+  const handlers = useTableActions(state, dispatch);
 
+  // 3. Edit & Meta Logic
   const editActions = useTableEditing({
     apiUrl,
     state,
@@ -80,9 +89,10 @@ const useTable = (config = {}) => {
     columns: config.columns,
     customRowUpdater: config.customRowUpdater,
     customFacetFetcher: config.customFacetFetcher,
+    idKey,
   });
 
-  // 3. Row Expansion Logic (Consolidated here since it's lightweight)
+  // 4. Lightweight UI Actions (Row Expansion)
   const handleToggleRowExpansion = useCallback(
     (rowId) => {
       dispatch({ type: ACTIONS.TOGGLE_ROW_EXPANSION, payload: rowId });
@@ -91,8 +101,8 @@ const useTable = (config = {}) => {
   );
 
   const handleExpandAll = useCallback(
-    (rowIds) => {
-      dispatch({ type: ACTIONS.EXPAND_ALL, payload: rowIds });
+    () => {
+      dispatch({ type: ACTIONS.EXPAND_ALL });
     },
     [dispatch],
   );
@@ -103,7 +113,7 @@ const useTable = (config = {}) => {
 
   return {
     ...state,
-    ...filterActions,
+    ...handlers,
     ...editActions,
     handleToggleRowExpansion,
     handleExpandAll,

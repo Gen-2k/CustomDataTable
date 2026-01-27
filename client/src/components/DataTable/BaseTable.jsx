@@ -9,15 +9,17 @@ import { getNestedValue } from "./utils/dataHelpers";
 import Pagination from "./Pagination";
 import EditableCell from "./components/EditableCell";
 import { useTableData, useTableActions } from "./TableContext";
+
+// Styles
 import "./styles/DataTable.css";
 import "./styles/DataTableStates.css";
 import "./styles/DataTable.vars.css";
 import "./styles/DataTable.utils.css";
 
 /**
- * Renders the sorting icon based on current sort state
+ * SortIcon - Visual indicator for the current sort state of a column.
  */
-const SortIcon = ({ sortConfig, columnKey }) => {
+const SortIcon = memo(({ sortConfig, columnKey }) => {
   if (!sortConfig || sortConfig.key !== columnKey) {
     return <ChevronsUpDown size={14} className="sort-icon-default" />;
   }
@@ -26,12 +28,12 @@ const SortIcon = ({ sortConfig, columnKey }) => {
   ) : (
     <ChevronDown size={14} className="sort-icon-active" />
   );
-};
+});
 
 /**
- * Helper to render a skeleton loading row
+ * SkeletonRow - Dynamic placeholders shown during initial data load.
  */
-const SkeletonRow = ({ columns = [] }) => (
+const SkeletonRow = memo(({ columns = [] }) => (
   <tr className="table-row">
     {columns.map((col, idx) => (
       <td
@@ -51,11 +53,11 @@ const SkeletonRow = ({ columns = [] }) => (
       </td>
     ))}
   </tr>
-);
+));
 
 /**
- * Renders a single row of the table.
- * Memoized to prevent re-renders when other rows or state slices change.
+ * TableRow - Efficient renderer for a single data record.
+ * Uses React.memo to skip re-renders if the specific row data or expanded state hasn't changed.
  */
 const TableRow = memo(
   ({
@@ -68,8 +70,9 @@ const TableRow = memo(
     handleCancelEdit,
     isExpanded,
     onToggle,
+    idKey,
   }) => {
-    const rowId = row.id || row._id || `row-${rowIdx}`;
+    const rowId = row[idKey] || `row-${rowIdx}`;
 
     return (
       <tr className={`table-row ${isExpanded ? "is-expanded" : ""}`}>
@@ -136,7 +139,13 @@ const TableRow = memo(
   },
 );
 
+/**
+ * BaseTable - The core rendering engine for the DataTable.
+ * Handles the calculation of layout (sticky columns) and rendering logic.
+ */
 const BaseTable = memo(({ renderSubTable, enablePagination }) => {
+  // 1. Data Subscriptions
+  const dataStore = useTableData();
   const {
     columns: allColumns = [],
     data = [],
@@ -147,8 +156,11 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
     editingCell,
     hiddenColumns = [],
     expandedRows = [],
-  } = useTableData();
+    idKey,
+    allExpanded,
+  } = dataStore;
 
+  // 2. Action Subscriptions
   const {
     handleSort: onSort,
     handleStartEdit,
@@ -159,19 +171,26 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
     handleCollapseAll,
   } = useTableActions();
 
+  // 3. Computed Properties
+  const isAllExpanded = allExpanded;
+  
+  // IDs for mass actions
   const allPageIds = useMemo(
-    () => data.map((row, idx) => row.id || row._id || `row-${idx}`),
-    [data],
+    () => (allExpanded ? [] : data.map((row, idx) => row[idKey] || `row-${idx}`)),
+    [data, idKey, allExpanded],
   );
-  const isAllExpanded =
-    allPageIds.length > 0 &&
-    allPageIds.every((id) => expandedRows.includes(id));
 
+  /**
+   * Layout Logic:
+   * Dynamically calculates sticky column offsets (left/right) 
+   * so that multiple sticky columns can stack correctly.
+   */
   const columns = useMemo(() => {
     let visibleCols = allColumns.filter(
       (col) => !hiddenColumns.includes(col.key),
     );
 
+    // Inject expansion toggle if needed
     if (renderSubTable) {
       visibleCols = [
         {
@@ -186,15 +205,12 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
       ];
     }
 
+    // Process Left Sticky Offsets
     let leftOffset = 0;
     const withLeft = visibleCols.map((col) => {
       const isSticky = col.sticky === "left";
       const style = isSticky
-        ? {
-            position: "sticky",
-            left: leftOffset,
-            zIndex: 15,
-          }
+        ? { position: "sticky", left: leftOffset, zIndex: 15 }
         : {};
       if (isSticky) {
         const w = parseInt(col.width) || 150;
@@ -203,6 +219,7 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
       return { ...col, stickyStyle: style };
     });
 
+    // Process Right Sticky Offsets
     let rightOffset = 0;
     for (let i = withLeft.length - 1; i >= 0; i--) {
       if (withLeft[i].sticky === "right") {
@@ -219,16 +236,15 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
     return withLeft;
   }, [allColumns, hiddenColumns, renderSubTable]);
 
+  // --- SUB-VIEWS ---
+
   if (error) {
     return (
       <div className="error-container">
         <div className="error-message">
           <span className="error-icon"></span>
           <span>Something went wrong: {error}</span>
-          <button
-            onClick={() => window.location.reload()}
-            className="error-retry-btn"
-          >
+          <button onClick={() => window.location.reload()} className="error-retry-btn">
             Retry
           </button>
         </div>
@@ -239,34 +255,19 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
   if (columns.length === 0 && !loading) {
     return (
       <div className="error-container">
-        <p>No columns configured. Please provide a columns array.</p>
+        <p>No columns configured. Please check your columns array.</p>
       </div>
     );
   }
 
-  const getSortAria = (colKey) => {
-    if (!sortConfig || sortConfig.key !== colKey) return "none";
-    return sortConfig.direction === "asc" ? "ascending" : "descending";
-  };
-
   return (
-    <div
-      className={`dt-scope table-wrapper-main ${loading ? "is-loading" : ""}`}
-    >
+    <div className={`dt-scope table-wrapper-main ${loading ? "is-loading" : ""}`}>
+      {/* Loading States */}
       {loading && data.length > 0 && (
-        <div className="loading-overlay">
-          <div className="loading-spinner" />
-        </div>
-      )}
-
-      {loading && data.length > 0 && (
-        <div
-          className="loading-progress-bar"
-          role="progressbar"
-          aria-label="Loading data"
-        >
-          <div className="loading-bar-inner" />
-        </div>
+        <>
+          <div className="loading-overlay"><div className="loading-spinner" /></div>
+          <div className="loading-progress-bar" role="progressbar"><div className="loading-bar-inner" /></div>
+        </>
       )}
 
       <div className="table-scroll-container dt-scrollbar">
@@ -276,6 +277,7 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
               {columns.map((col, index) => {
                 const isSortable = col.sortable !== false;
                 const isSorted = sortConfig?.key === col.key;
+                const ariaSort = !sortConfig || sortConfig.key !== col.key ? "none" : (sortConfig.direction === "asc" ? "ascending" : "descending");
 
                 return (
                   <th
@@ -286,7 +288,7 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
                       col.isExpansionToggle ? "is-expansion-header" : ""
                     }`}
                     onClick={() => isSortable && onSort && onSort(col.key)}
-                    aria-sort={getSortAria(col.key)}
+                    aria-sort={ariaSort}
                     role="columnheader"
                     style={{
                       width: col.width,
@@ -297,41 +299,22 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
                     <div className="header-content">
                       {col.isExpansionToggle ? (
                         <button
-                          className={`expansion-toggle-btn master-toggle ${
-                            isAllExpanded ? "is-active" : ""
-                          }`}
+                          className={`expansion-toggle-btn master-toggle ${isAllExpanded ? "is-active" : ""}`}
                           onClick={(e) => {
                             e.stopPropagation();
-                            if (isAllExpanded) {
-                              handleCollapseAll();
-                            } else {
-                              handleExpandAll(allPageIds);
-                            }
+                            isAllExpanded ? handleCollapseAll() : handleExpandAll(allPageIds);
                           }}
-                          aria-label={
-                            isAllExpanded ? "Collapse all" : "Expand all"
-                          }
+                          aria-label={isAllExpanded ? "Collapse all" : "Expand all"}
                           title={isAllExpanded ? "Collapse all" : "Expand all"}
                         >
-                          {isAllExpanded ? (
-                            <ChevronDown size={18} />
-                          ) : (
-                            <ChevronRight size={18} />
-                          )}
+                          {isAllExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
                         </button>
                       ) : (
                         <>
                           <span className="header-label">{col.label}</span>
                           {isSortable && (
-                            <span
-                              className={`sort-icon-wrapper ${
-                                isSorted ? "is-active" : ""
-                              }`}
-                            >
-                              <SortIcon
-                                sortConfig={sortConfig}
-                                columnKey={col.key}
-                              />
+                            <span className={`sort-icon-wrapper ${isSorted ? "is-active" : ""}`}>
+                              <SortIcon sortConfig={sortConfig} columnKey={col.key} />
                             </span>
                           )}
                         </>
@@ -343,11 +326,15 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
             </tr>
           </thead>
           <tbody className="table-body">
+            {/* 1. Loading Skeleton */}
             {loading && data.length === 0 ? (
               [...Array(pageSize || 5)].map((_, i) => (
                 <SkeletonRow key={`skeleton-row-${i}`} columns={columns} />
               ))
-            ) : Array.isArray(data) && data.length === 0 ? (
+            ) : 
+            
+            /* 2. Empty State */
+            Array.isArray(data) && data.length === 0 ? (
               <tr className="table-row">
                 <td colSpan={columns.length} className="table-cell empty-state">
                   <div className="empty-content">
@@ -356,10 +343,13 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
                   </div>
                 </td>
               </tr>
-            ) : (
+            ) : 
+            
+            /* 3. Data Render */
+            (
               data.map((row, rowIdx) => {
-                const rowId = row.id || row._id || `row-${rowIdx}`;
-                const isExpanded = expandedRows.includes(rowId);
+                const rowId = row[idKey] || `row-${rowIdx}`;
+                const isExpanded = allExpanded || expandedRows.includes(rowId);
 
                 return (
                   <React.Fragment key={rowId}>
@@ -373,6 +363,7 @@ const BaseTable = memo(({ renderSubTable, enablePagination }) => {
                       handleCancelEdit={handleCancelEdit}
                       isExpanded={isExpanded}
                       onToggle={handleToggleRowExpansion}
+                      idKey={idKey}
                     />
                     {isExpanded && renderSubTable && (
                       <tr className="sub-table-row">

@@ -1,15 +1,35 @@
 /**
- * Safely retrieves nested values from an object using a dot-notation path.
- * Example: getNestedValue(user, "profile.firstName")
- *
- * @param {Object} object - The source object
- * @param {string} path - The dot-notation path
- * @returns {any} - The value at the path or null if not found
+ * dataHelpers - Standardized utility functions for complex data manipulation.
  */
-export const getNestedValue = (object, path) => {
-  if (!object || !path) return null;
 
-  return path.split(".").reduce((acc, key) => {
-    return acc && acc[key] !== undefined ? acc[key] : null;
-  }, object);
+/**
+ * Safely retrieves a value from a deeply nested object using a dot-notation path.
+ * Effectively handles null/undefined at any level of the tree.
+ * 
+ * @example
+ * getNestedValue({ user: { name: "John" } }, "user.name") // returns "John"
+ * 
+ * @param {Object} obj - Source object to traverse.
+ * @param {string} path - Dot-notation string path (e.g., "address.city").
+ * @returns {any} - The value at the path, or null if traversal fails.
+ */
+export const getNestedValue = (obj, path) => {
+  if (!obj || typeof path !== "string") return null;
+
+  return path.split(".").reduce((current, key) => {
+    return (current !== null && current !== undefined && current[key] !== undefined) 
+      ? current[key] 
+      : null;
+  }, obj);
+};
+
+/**
+ * Normalizes a value for stable comparison (Sorting/Searching).
+ * 
+ * @param {any} value - The input value to normalize.
+ * @returns {string} - Lowarcased string for comparison.
+ */
+export const normalizeValue = (value) => {
+  if (value === null || value === undefined) return "";
+  return String(value).toLowerCase().trim();
 };

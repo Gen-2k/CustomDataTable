@@ -1,7 +1,20 @@
 import { useCallback } from "react";
 import { ACTIONS } from "./useTableReducer";
 
-export const useTableFilters = (state, dispatch) => {
+/**
+ * useTableActions - The "Controller" of the DataTable.
+ * This hook generates stable, memoized event handlers that child components 
+ * use to interact with the table state (sorting, search, paging).
+ * 
+ * @param {Object} state - The current reducer state.
+ * @param {Function} dispatch - The reducer dispatch function.
+ */
+export const useTableActions = (state, dispatch) => {
+  
+  /**
+   * Toggles sorting on a specific column.
+   * Cycles: ASC -> DESC -> Off
+   */
   const handleSort = useCallback(
     (key) => {
       let direction = "asc";
@@ -19,13 +32,16 @@ export const useTableFilters = (state, dispatch) => {
         type: ACTIONS.UPDATE_PARAMS,
         payload: {
           sortConfig: { key: nextKey, direction },
-          currentPage: 1,
+          currentPage: 1, // Reset to page 1 on sort change
         },
       });
     },
     [state.sortConfig, dispatch],
   );
 
+  /**
+   * High-level handler for search interactions.
+   */
   const handleSearch = useCallback(
     (actionType, payload) => {
       const searchActions = {
@@ -33,6 +49,7 @@ export const useTableFilters = (state, dispatch) => {
         setFilters: () => dispatch({ type: ACTIONS.SET_FILTERS, payload }),
         clear: () => dispatch({ type: ACTIONS.CLEAR_FILTERS }),
       };
+      
       if (searchActions[actionType]) searchActions[actionType]();
     },
     [dispatch],

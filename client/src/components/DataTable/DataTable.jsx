@@ -29,6 +29,9 @@ const DataTable = ({
   disableUrlSync = false,
   enablePagination = false,
   data: staticData,
+  idKey = "id",
+  disableExpansionSync = false,
+  accordionMode = false,
 }) => {
   return (
     <div className="ztable-container dt-scope">
@@ -44,6 +47,9 @@ const DataTable = ({
         disableUrlSync={disableUrlSync}
         staticData={staticData}
         renderSubTable={renderSubTable}
+        idKey={idKey}
+        disableExpansionSync={disableExpansionSync}
+        accordionMode={accordionMode}
       >
         {enableSearch && <DataTableSearch placeholder={searchPlaceholder} />}
         {headerActions && (

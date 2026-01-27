@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { useTableData, useTableActions } from "../TableContext";
 import { resolveEditor } from "./editors";
 
-const EditableCell = ({
+/**
+ * EditableCell - A wrapper component that toggles between 
+ * a "View" state and an "Edit" state (Editor).
+ */
+const EditableCell = memo(({
   value: initialValue,
   row,
   column,
@@ -11,50 +15,46 @@ const EditableCell = ({
   onSave,
   onCancel,
 }) => {
+  // Internal state for the current editing value
   const [val, setVal] = useState(initialValue);
   const [isSaving, setIsSaving] = useState(false);
-  const [prevIsEditing, setPrevIsEditing] = useState(isEditing);
+  
   const { facetCache } = useTableData();
   const { fetchFacetOptions } = useTableActions();
 
-  if (isEditing && !prevIsEditing) {
-    setPrevIsEditing(true);
-    setVal(initialValue);
-    setIsSaving(false);
-  } else if (!isEditing && prevIsEditing) {
-    setPrevIsEditing(false);
-    setIsSaving(false);
-  }
-
+  /**
+   * Sync internal state when entering/exiting edit mode.
+   * This ensures the editor always starts with the freshest data from the row.
+   */
   useEffect(() => {
     if (isEditing) {
+      setVal(initialValue);
+      setIsSaving(false);
+
+      // Trigger metadata fetch if needed for dropdowns
       if (column.dynamicOptions && !facetCache[column.key]) {
         fetchFacetOptions(column.key);
       }
     }
-  }, [
-    isEditing,
-    column.dynamicOptions,
-    column.key,
-    facetCache,
-    fetchFacetOptions,
-  ]);
+  }, [isEditing, initialValue, column.dynamicOptions, column.key, facetCache, fetchFacetOptions]);
 
   const handleCommit = async (finalValue) => {
     if (isSaving) return;
 
+    // Use passed value or current state value
     const valueToSave = finalValue !== undefined ? finalValue : val;
-    const isSame = JSON.stringify(initialValue) === JSON.stringify(valueToSave);
-    if (isSame) return onCancel();
+    
+    // Safety: If no change, just cancel
+    if (JSON.stringify(initialValue) === JSON.stringify(valueToSave)) {
+      return onCancel();
+    }
 
     setIsSaving(true);
     try {
       let casted = valueToSave;
-      if (
-        column.filterType === "number" &&
-        valueToSave !== "" &&
-        valueToSave !== null
-      ) {
+      
+      // Basic type casting based on column metadata
+      if (column.filterType === "number" && valueToSave !== "" && valueToSave !== null) {
         casted = Number(valueToSave);
       } else if (column.filterType === "boolean") {
         casted = String(valueToSave) === "true";
@@ -62,12 +62,15 @@ const EditableCell = ({
 
       await onSave(casted);
     } catch (err) {
-      console.error("Save failed in cell:", err);
+      console.error("DataTable: Save failed in EditableCell.", err);
     } finally {
       setIsSaving(false);
     }
   };
 
+  /**
+   * --- RENDER VIEW STATE ---
+   */
   if (!isEditing) {
     return (
       <div
@@ -83,16 +86,18 @@ const EditableCell = ({
     );
   }
 
+  /**
+   * --- RENDER EDIT STATE ---
+   */
   const Editor = resolveEditor(column);
-  const options =
-    column.options ||
-    facetCache[column.key] ||
-    (column.filterType === "boolean"
-      ? [
-          { label: "True", value: true },
-          { label: "False", value: false },
-        ]
-      : []);
+  
+  // Resolve options (Static -> Dynamic -> Fallbacks)
+  const options = column.options || facetCache[column.key] || (
+    column.filterType === "boolean" ? [
+      { label: "True", value: true },
+      { label: "False", value: false }
+    ] : []
+  );
 
   const isMetadataLoading = column.dynamicOptions && !facetCache[column.key];
 
@@ -109,6 +114,6 @@ const EditableCell = ({
       row={row}
     />
   );
-};
+});
 
 export default EditableCell;
