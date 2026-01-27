@@ -83,19 +83,29 @@ export const tableColumns = [
     editable: true,
     dynamicOptions: true,
     render: (r) => {
-      const skills = Array.isArray(r.work?.skills) ? r.work.skills : [];
+      const skills = r.work?.skills || [];
+      if (skills.length === 0) return <span className="dt-text-muted">-</span>;
+
       return (
-        <div className="dt-chips-container">
-          {skills.slice(0, 2).map((skill, i) => (
-            <span key={i} className="dt-chip">
-              {skill}
-            </span>
-          ))}
-          {skills.length > 2 && (
-            <span style={{ fontSize: "11px", color: "var(--dt-text-muted)" }}>
-              +{skills.length - 2}
-            </span>
-          )}
+        <div className="dt-tooltip-trigger">
+          <div className="dt-chips-container">
+            {skills.slice(0, 2).map((skill, i) => (
+              <span key={i} className="dt-chip">
+                {skill}
+              </span>
+            ))}
+            {skills.length > 2 && (
+              <span className="dt-chip-more">+{skills.length - 2}</span>
+            )}
+          </div>
+
+          <div className="dt-tooltip-content">
+            {skills.map((skill, i) => (
+              <span key={i} className="dt-chip">
+                {skill}
+              </span>
+            ))}
+          </div>
         </div>
       );
     },

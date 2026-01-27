@@ -87,9 +87,69 @@
 
 .dt-chip {
   font-size: 11px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 4px;
   background-color: var(--dt-bg-header);
   color: var(--dt-text-secondary);
   border: 1px solid var(--dt-border-color);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.dt-chip-more {
+  font-size: 11px;
+  color: var(--dt-text-muted);
+  font-weight: 600;
+  cursor: help;
+  padding: 1px 4px;
+}
+
+/* --- Scoped Tooltip --- */
+.dt-tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  cursor: help;
+}
+.dt-tooltip-content {
+  position: absolute;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  min-width: 160px;
+  max-width: 260px;
+  background: var(--dt-bg-main);
+  border: 1px solid var(--dt-border-color);
+  border-radius: var(--dt-radius-md);
+  box-shadow: var(--dt-shadow-lg);
+  transform: translateY(4px);
+  transition: all 0.2s ease;
+}
+.dt-tooltip-trigger:hover .dt-tooltip-content {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Arrow */
+.dt-tooltip-content::before,
+.dt-tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 16px;
+  border: 6px solid transparent;
+  border-top-color: var(--dt-border-color);
+}
+.dt-tooltip-content::after {
+  border-width: 5px;
+  border-top-color: var(--dt-bg-main);
+  margin-left: 1px;
+  margin-top: -1px;
 }
