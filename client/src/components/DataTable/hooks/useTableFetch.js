@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useRef } from "react";
 import { ACTIONS } from "./useTableReducer";
 import { updateURLFromState } from "../utils/urlSync";
+import { getNestedValue } from "../utils/dataHelpers";
 
 const DEFAULT_REQUEST_MAPPER = (state) => ({
   page: state.currentPage,
@@ -27,22 +28,40 @@ export const useTableFetch = ({
   requestMapper = DEFAULT_REQUEST_MAPPER,
   responseMapper = DEFAULT_RESPONSE_MAPPER,
   customFetcher = null,
+  disableUrlSync = false,
+  staticData = null,
 }) => {
   const abortControllerRef = useRef(null);
   const configRef = useRef({ requestMapper, responseMapper, customFetcher });
 
   useEffect(() => {
-    configRef.current = { requestMapper, responseMapper, customFetcher };
-  }, [requestMapper, responseMapper, customFetcher]);
+    configRef.current = {
+      requestMapper,
+      responseMapper,
+      customFetcher,
+      disableUrlSync,
+      staticData,
+    };
+  }, [
+    requestMapper,
+    responseMapper,
+    customFetcher,
+    disableUrlSync,
+    staticData,
+  ]);
 
   useEffect(() => {
-    updateURLFromState(state);
+    if (!disableUrlSync) {
+      updateURLFromState(state);
+    }
   }, [
     state.currentPage,
     state.pageSize,
     state.searchTerm,
     state.activeFilters,
     state.sortConfig,
+    state.expandedRows,
+    disableUrlSync,
   ]);
 
   const fetchData = useCallback(async () => {
@@ -70,6 +89,43 @@ export const useTableFetch = ({
       let result;
       if (currentFetcher) {
         result = await currentFetcher(apiParams, controller.signal);
+      } else if (staticData) {
+        // Handle client-side sorting, filtering, and searching for static data
+        let filteredData = [...staticData];
+
+        // 1. Client-side Search
+        if (state.debouncedSearchTerm) {
+          const search = state.debouncedSearchTerm.toLowerCase();
+          filteredData = filteredData.filter((item) =>
+            JSON.stringify(item).toLowerCase().includes(search),
+          );
+        }
+
+        // 2. Client-side Sorting
+        if (state.sortConfig.key) {
+          const { key, direction } = state.sortConfig;
+          filteredData.sort((a, b) => {
+            const aVal = getNestedValue(a, key);
+            const bVal = getNestedValue(b, key);
+
+            if (aVal === bVal) return 0;
+            if (aVal === null || aVal === undefined) return 1;
+            if (bVal === null || bVal === undefined) return -1;
+
+            const comparison = aVal < bVal ? -1 : 1;
+            return direction === "asc" ? comparison : -comparison;
+          });
+        }
+
+        dispatch({
+          type: ACTIONS.FETCH_SUCCESS,
+          payload: {
+            data: filteredData,
+            total: filteredData.length,
+            totalPages: 1,
+          },
+        });
+        return;
       } else if (apiUrl) {
         const query = new URLSearchParams();
         Object.entries(apiParams).forEach(([key, val]) => {
@@ -115,6 +171,7 @@ export const useTableFetch = ({
     fetchData();
     return () => abortControllerRef.current?.abort();
   }, [fetchData]);
+
   useEffect(() => {
     const searchString = state.searchTerm.join(" ");
     if (searchString === state.debouncedSearchTerm) return;

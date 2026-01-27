@@ -25,6 +25,10 @@ const DataTable = ({
   customFacetFetcher,
 
   headerActions,
+  renderSubTable,
+  disableUrlSync = false,
+  enablePagination = false,
+  data: staticData,
 }) => {
   return (
     <div className="ztable-container dt-scope">
@@ -37,6 +41,9 @@ const DataTable = ({
         customFetcher={customFetcher}
         customRowUpdater={customRowUpdater}
         customFacetFetcher={customFacetFetcher}
+        disableUrlSync={disableUrlSync}
+        staticData={staticData}
+        renderSubTable={renderSubTable}
       >
         {enableSearch && <DataTableSearch placeholder={searchPlaceholder} />}
         {headerActions && (
@@ -45,7 +52,10 @@ const DataTable = ({
           </div>
         )}
 
-        <BaseTable />
+        <BaseTable
+          renderSubTable={renderSubTable}
+          enablePagination={enablePagination}
+        />
       </TableProvider>
     </div>
   );

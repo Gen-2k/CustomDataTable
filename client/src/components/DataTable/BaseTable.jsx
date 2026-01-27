@@ -1,5 +1,10 @@
 import React, { memo, useMemo } from "react";
-import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import {
+  ChevronUp,
+  ChevronDown,
+  ChevronsUpDown,
+  ChevronRight,
+} from "lucide-react";
 import { getNestedValue } from "./utils/dataHelpers";
 import Pagination from "./Pagination";
 import EditableCell from "./components/EditableCell";
@@ -61,11 +66,13 @@ const TableRow = memo(
     handleStartEdit,
     handleSaveEdit,
     handleCancelEdit,
+    isExpanded,
+    onToggle,
   }) => {
     const rowId = row.id || row._id || `row-${rowIdx}`;
 
     return (
-      <tr className="table-row">
+      <tr className={`table-row ${isExpanded ? "is-expanded" : ""}`}>
         {columns.map((col, colIdx) => {
           const isEditing =
             editingCell?.rowId === rowId && editingCell?.colKey === col.key;
@@ -81,7 +88,23 @@ const TableRow = memo(
               style={{ ...col.stickyStyle }}
             >
               <div className="cell-content">
-                {col.editable ? (
+                {col.isExpansionToggle ? (
+                  <button
+                    className="expansion-toggle-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggle(rowId);
+                    }}
+                    aria-expanded={isExpanded}
+                    aria-label={isExpanded ? "Collapse row" : "Expand row"}
+                  >
+                    {isExpanded ? (
+                      <ChevronDown size={18} />
+                    ) : (
+                      <ChevronRight size={18} />
+                    )}
+                  </button>
+                ) : col.editable ? (
                   <EditableCell
                     value={getNestedValue(row, col.key)}
                     row={row}
@@ -96,7 +119,13 @@ const TableRow = memo(
                 ) : col.render ? (
                   col.render(row)
                 ) : (
-                  getNestedValue(row, col.key)
+                  (() => {
+                    const val = getNestedValue(row, col.key);
+                    if (typeof val === "object" && val !== null) {
+                      return JSON.stringify(val);
+                    }
+                    return val;
+                  })()
                 )}
               </div>
             </td>
@@ -107,7 +136,7 @@ const TableRow = memo(
   },
 );
 
-const BaseTable = memo(() => {
+const BaseTable = memo(({ renderSubTable, enablePagination }) => {
   const {
     columns: allColumns = [],
     data = [],
@@ -117,6 +146,7 @@ const BaseTable = memo(() => {
     pageSize,
     editingCell,
     hiddenColumns = [],
+    expandedRows = [],
   } = useTableData();
 
   const {
@@ -124,12 +154,37 @@ const BaseTable = memo(() => {
     handleStartEdit,
     handleCancelEdit,
     handleSaveEdit,
+    handleToggleRowExpansion,
+    handleExpandAll,
+    handleCollapseAll,
   } = useTableActions();
 
+  const allPageIds = useMemo(
+    () => data.map((row, idx) => row.id || row._id || `row-${idx}`),
+    [data],
+  );
+  const isAllExpanded =
+    allPageIds.length > 0 &&
+    allPageIds.every((id) => expandedRows.includes(id));
+
   const columns = useMemo(() => {
-    const visibleCols = allColumns.filter(
+    let visibleCols = allColumns.filter(
       (col) => !hiddenColumns.includes(col.key),
     );
+
+    if (renderSubTable) {
+      visibleCols = [
+        {
+          key: "__expand__",
+          label: "",
+          width: "50px",
+          sticky: "left",
+          sortable: false,
+          isExpansionToggle: true,
+        },
+        ...visibleCols,
+      ];
+    }
 
     let leftOffset = 0;
     const withLeft = visibleCols.map((col) => {
@@ -162,7 +217,7 @@ const BaseTable = memo(() => {
       }
     }
     return withLeft;
-  }, [allColumns, hiddenColumns]);
+  }, [allColumns, hiddenColumns, renderSubTable]);
 
   if (error) {
     return (
@@ -227,7 +282,9 @@ const BaseTable = memo(() => {
                     key={col.key || `col-${index}`}
                     className={`table-header ${isSortable ? "clickable" : ""} ${
                       col.sticky ? "is-sticky" : ""
-                    } ${col.sticky === "right" ? "is-sticky-right" : ""}`}
+                    } ${col.sticky === "right" ? "is-sticky-right" : ""} ${
+                      col.isExpansionToggle ? "is-expansion-header" : ""
+                    }`}
                     onClick={() => isSortable && onSort && onSort(col.key)}
                     aria-sort={getSortAria(col.key)}
                     role="columnheader"
@@ -238,18 +295,46 @@ const BaseTable = memo(() => {
                     }}
                   >
                     <div className="header-content">
-                      <span className="header-label">{col.label}</span>
-                      {isSortable && (
-                        <span
-                          className={`sort-icon-wrapper ${
-                            isSorted ? "is-active" : ""
+                      {col.isExpansionToggle ? (
+                        <button
+                          className={`expansion-toggle-btn master-toggle ${
+                            isAllExpanded ? "is-active" : ""
                           }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isAllExpanded) {
+                              handleCollapseAll();
+                            } else {
+                              handleExpandAll(allPageIds);
+                            }
+                          }}
+                          aria-label={
+                            isAllExpanded ? "Collapse all" : "Expand all"
+                          }
+                          title={isAllExpanded ? "Collapse all" : "Expand all"}
                         >
-                          <SortIcon
-                            sortConfig={sortConfig}
-                            columnKey={col.key}
-                          />
-                        </span>
+                          {isAllExpanded ? (
+                            <ChevronDown size={18} />
+                          ) : (
+                            <ChevronRight size={18} />
+                          )}
+                        </button>
+                      ) : (
+                        <>
+                          <span className="header-label">{col.label}</span>
+                          {isSortable && (
+                            <span
+                              className={`sort-icon-wrapper ${
+                                isSorted ? "is-active" : ""
+                              }`}
+                            >
+                              <SortIcon
+                                sortConfig={sortConfig}
+                                columnKey={col.key}
+                              />
+                            </span>
+                          )}
+                        </>
                       )}
                     </div>
                   </th>
@@ -272,24 +357,41 @@ const BaseTable = memo(() => {
                 </td>
               </tr>
             ) : (
-              data.map((row, rowIdx) => (
-                <TableRow
-                  key={row.id || row._id || `row-${rowIdx}`}
-                  row={row}
-                  rowIdx={rowIdx}
-                  columns={columns}
-                  editingCell={editingCell}
-                  handleStartEdit={handleStartEdit}
-                  handleSaveEdit={handleSaveEdit}
-                  handleCancelEdit={handleCancelEdit}
-                />
-              ))
+              data.map((row, rowIdx) => {
+                const rowId = row.id || row._id || `row-${rowIdx}`;
+                const isExpanded = expandedRows.includes(rowId);
+
+                return (
+                  <React.Fragment key={rowId}>
+                    <TableRow
+                      row={row}
+                      rowIdx={rowIdx}
+                      columns={columns}
+                      editingCell={editingCell}
+                      handleStartEdit={handleStartEdit}
+                      handleSaveEdit={handleSaveEdit}
+                      handleCancelEdit={handleCancelEdit}
+                      isExpanded={isExpanded}
+                      onToggle={handleToggleRowExpansion}
+                    />
+                    {isExpanded && renderSubTable && (
+                      <tr className="sub-table-row">
+                        <td colSpan={columns.length} className="sub-table-cell">
+                          <div className="sub-table-container">
+                            {renderSubTable(row)}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
-      <Pagination />
+      {enablePagination && <Pagination />}
     </div>
   );
 });

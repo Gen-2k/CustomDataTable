@@ -26,6 +26,9 @@ export const TableProvider = ({
   customFetcher,
   customRowUpdater,
   customFacetFetcher,
+  disableUrlSync,
+  staticData,
+  renderSubTable,
 }) => {
   const tableData = useTable({
     apiUrl,
@@ -36,6 +39,8 @@ export const TableProvider = ({
     customFetcher,
     customRowUpdater,
     customFacetFetcher,
+    disableUrlSync,
+    staticData,
   });
 
   const {
@@ -69,6 +74,11 @@ export const TableProvider = ({
     fetchFacetOptions,
     // Column Customization
     hiddenColumns,
+    // Expansion
+    expandedRows,
+    handleToggleRowExpansion,
+    handleExpandAll,
+    handleCollapseAll,
   } = tableData;
 
   // 1. Memoize Search State
@@ -91,6 +101,8 @@ export const TableProvider = ({
       editingCell,
       facetCache,
       hiddenColumns,
+      expandedRows,
+      showExpandControls: !!renderSubTable,
     }),
     [
       data,
@@ -105,6 +117,8 @@ export const TableProvider = ({
       editingCell,
       facetCache,
       hiddenColumns,
+      expandedRows,
+      renderSubTable,
     ],
   );
 
@@ -121,6 +135,9 @@ export const TableProvider = ({
       handleSaveEdit,
       handleToggleColumn,
       fetchFacetOptions,
+      handleToggleRowExpansion,
+      handleExpandAll,
+      handleCollapseAll,
     }),
     [
       handleSort,
@@ -133,6 +150,9 @@ export const TableProvider = ({
       handleSaveEdit,
       handleToggleColumn,
       fetchFacetOptions,
+      handleToggleRowExpansion,
+      handleExpandAll,
+      handleCollapseAll,
     ],
   );
 

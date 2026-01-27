@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, memo, useMemo } from "react";
 import { Search, X } from "lucide-react";
-import { useTableSearch, useTableActions } from "./TableContext";
+import { useTableSearch, useTableActions, useTableData } from "./TableContext";
 import "./styles/DataTableSearch.css";
 import "./styles/DataTable.vars.css";
 import {

@@ -40,6 +40,10 @@ function App() {
 | `customFetcher`      | `func`    | `fetch` builtin      | Replace default fetch logic (e.g., for Axios or SDKs).             |
 | `customRowUpdater`   | `func`    | `PUT` request        | Intercept and handle row updates manually.                         |
 | `customFacetFetcher` | `func`    | `(field) => options` | Manually provide options for dropdowns/tags.                       |
+| `renderSubTable`     | `func`    | `undefined`          | **Sub-Table Support.** Renderer for expanded nested rows.          |
+| `disableUrlSync`     | `boolean` | `false`              | Disables URL state syncing (useful for nested tables).             |
+| `data`               | `array`   | `undefined`          | Static data override (skips API fetching if provided).             |
+| `enablePagination`   | `boolean` | `false`              | Enables/Disables the pagination footer.                            |
 
 ---
 

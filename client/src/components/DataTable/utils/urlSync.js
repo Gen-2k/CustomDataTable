@@ -29,6 +29,9 @@ export const getInitialStateFromURL = (defaults) => {
   if (params.has("hide")) {
     state.hiddenColumns = params.get("hide").split(",").filter(Boolean);
   }
+  if (params.has("expanded")) {
+    state.expandedRows = params.get("expanded").split(",").filter(Boolean);
+  }
 
   return state;
 };
@@ -50,6 +53,11 @@ export const updateURLFromState = (state) => {
   }
   if (state.hiddenColumns && state.hiddenColumns.length > 0) {
     params.set("hide", state.hiddenColumns.join(","));
+  }
+  if (state.expandedRows && state.expandedRows.length > 0) {
+    // Persist up to 50 IDs to keep the URL safe (~2KB limit)
+    const persistedIds = state.expandedRows.slice(0, 50);
+    params.set("expanded", persistedIds.join(","));
   }
 
   const query = params.toString();

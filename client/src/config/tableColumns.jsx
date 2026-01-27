@@ -1,7 +1,68 @@
+import DataTable from "../components/DataTable";
+
 /**
  * DataTable Column Configuration
  * Defines the structure and rendering logic for all table columns
  */
+
+const expenseColumns = [
+  { label: "Merchant", key: "merchant", width: "150px" },
+  {
+    label: "Amount",
+    key: "amount",
+    width: "120px",
+    render: (r) => (
+      <span style={{ fontWeight: "600" }}>
+        {r.currency} {r.amount.toLocaleString()}
+      </span>
+    ),
+  },
+  {
+    label: "Date",
+    key: "date",
+    width: "120px",
+    render: (r) => new Date(r.date).toLocaleDateString(),
+  },
+  {
+    label: "Status",
+    key: "status",
+    width: "100px",
+    render: (r) => (
+      <span
+        className={`dt-badge ${
+          r.status === "approved"
+            ? "dt-badge-success"
+            : r.status === "pending"
+              ? "dt-badge-warning"
+              : "dt-badge-danger"
+        }`}
+      >
+        {r.status}
+      </span>
+    ),
+  },
+];
+
+export const renderEmployeeSubTable = (row) => {
+  const expenses = row.appData?.expenses || [];
+
+  return (
+    <div className="sub-table-content-wrapper">
+      {expenses.length > 0 ? (
+        <DataTable
+          columns={expenseColumns}
+          data={expenses}
+          enableSearch={false}
+          disableUrlSync={true}
+        />
+      ) : (
+        <div className="sub-table-empty-state">
+          No expense claims recorded for this employee.
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const tableColumns = [
   {
@@ -63,17 +124,6 @@ export const tableColumns = [
     filterType: "text",
     editable: true,
     dynamicOptions: true,
-    // render: (r) => (
-    //   <span
-    //     className={`dt-badge ${
-    //       r.work.contractType === "Full-Time"
-    //         ? "dt-badge-info"
-    //         : "dt-badge-warning"
-    //     }`}
-    //   >
-    //     {r.work.contractType}
-    //   </span>
-    // ),
   },
   {
     label: "Skills",
@@ -137,12 +187,6 @@ export const tableColumns = [
     key: "finance.creditScore",
     filterType: "number",
     editable: true,
-    // render: (r) => {
-    //   const score = r.finance.creditScore;
-    //   const color =
-    //     score >= 750 ? "#16a34a" : score >= 650 ? "#d97706" : "#dc2626";
-    //   return <span style={{ fontWeight: "bold", color }}>{score}</span>;
-    // },
   },
 
   {

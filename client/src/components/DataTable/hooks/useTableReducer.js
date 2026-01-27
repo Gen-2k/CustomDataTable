@@ -11,10 +11,36 @@ export const ACTIONS = {
   UPDATE_ROW: "UPDATE_ROW",
   SET_FACETS: "SET_FACETS",
   TOGGLE_COLUMN: "TOGGLE_COLUMN",
+  TOGGLE_ROW_EXPANSION: "TOGGLE_ROW_EXPANSION",
+  EXPAND_ALL: "EXPAND_ALL",
+  COLLAPSE_ALL: "COLLAPSE_ALL",
 };
 
 export function tableReducer(state, action) {
   switch (action.type) {
+    case ACTIONS.TOGGLE_ROW_EXPANSION: {
+      const rowId = action.payload;
+      const isExpanded = state.expandedRows.includes(rowId);
+      return {
+        ...state,
+        expandedRows: isExpanded
+          ? state.expandedRows.filter((id) => id !== rowId)
+          : [...state.expandedRows, rowId],
+      };
+    }
+    case ACTIONS.EXPAND_ALL: {
+      const allIds = action.payload; // Array of IDs to expand
+      return {
+        ...state,
+        expandedRows: [...new Set([...state.expandedRows, ...allIds])],
+      };
+    }
+    case ACTIONS.COLLAPSE_ALL: {
+      return {
+        ...state,
+        expandedRows: [],
+      };
+    }
     case ACTIONS.TOGGLE_COLUMN:
       return {
         ...state,
