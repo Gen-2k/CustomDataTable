@@ -55,6 +55,7 @@ export const useTableFetch = ({
     state.sortConfig, 
     state.expandedRows, 
     state.allExpanded, 
+    state.hiddenColumns,
     disableUrlSync, 
     disableExpansionSync
   ]);

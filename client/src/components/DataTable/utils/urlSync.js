@@ -1,22 +1,24 @@
 /**
- * urlSync - Professional URL state management.
+ * urlSync - Professional URL & Storage state management.
  * 
- * This utility handles the "Deep Linking" capability of the DataTable.
- * It ensures the browser URL reflects the current UI state (sort, search, pagination)
- * while maintaining performance via a Hybrid Persistence strategy.
+ * This utility handles the "Deep Linking" and "Persistence" capabilities of the DataTable.
+ * 
+ * Strategy:
+ * - URL: Priority for shareable state (Pagination, Search, Sort).
+ * - LocalStorage: Priority for User Preferences (Column Visibility).
+ * - SessionStorage: Priority for Navigation State (Recent Expansions).
  */
 
 /**
- * Parses the current URL and Storage to rebuild the initial table state.
+ * Parses the current URL and Local Storage to rebuild the initial table state.
  * 
  * @param {Object} defaults - The baseline state of the table.
- * @returns {Object} - The hydated state from URL/Storage.
+ * @returns {Object} - The hydrated state from URL/Storage.
  */
 export const getInitialStateFromURL = (defaults) => {
   const params = new URLSearchParams(window.location.search);
   const state = { ...defaults };
-  let urlExpandedIds = [];
-
+  
   // --- 1. Basic Navigation & Search ---
   if (params.has("page")) state.currentPage = Number(params.get("page"));
   if (params.has("limit")) state.pageSize = Number(params.get("limit"));
@@ -42,48 +44,60 @@ export const getInitialStateFromURL = (defaults) => {
     }
   }
 
-  // --- 4. UI Customizations (Hidden Columns) ---
+  // --- 4. Column Visibility (Hybrid Recovery) ---
+  let urlHidden = [];
   if (params.has("hide")) {
-    state.hiddenColumns = params.get("hide").split(",").filter(Boolean);
+    urlHidden = params.get("hide").split(",").filter(Boolean);
   }
 
-  // --- 5. Hybrid Expansion Logic (URL + SessionStorage) ---
+  let localHidden = [];
+  try {
+    const saved = localStorage.getItem("dt_hidden_columns");
+    if (saved) localHidden = JSON.parse(saved);
+  } catch (e) {
+    // Fail silently
+  }
+
+  // Combine both, giving priority to URL for specific shared links
+  state.hiddenColumns = [...new Set([...urlHidden, ...localHidden])];
+
+  // --- 5. Expansion Logic (Hybrid URL + SessionStorage) ---
+  let urlExpanded = [];
   if (params.has("expanded")) {
     const val = params.get("expanded");
     if (val === "all") {
       state.allExpanded = true;
       state.expandedRows = [];
     } else {
-      urlExpandedIds = val.split(",").filter(Boolean);
+      urlExpanded = val.split(",").filter(Boolean);
     }
   }
 
-  let sessionExpandedIds = [];
+  let sessionExpanded = [];
   try {
     const saved = sessionStorage.getItem("dt_expanded_state");
-    if (saved) sessionExpandedIds = JSON.parse(saved);
+    if (saved) sessionExpanded = JSON.parse(saved);
   } catch {
-    // Fail silently if storage is locked (incognito mode)
+    // Fail silently
   }
 
   // Merge both sources, ensuring uniqueness
-  state.expandedRows = [...new Set([...urlExpandedIds, ...sessionExpandedIds])];
+  state.expandedRows = [...new Set([...urlExpanded, ...sessionExpanded])];
 
   return state;
 };
 
 /**
- * Synchronizes the internal table state to the browser address bar.
- * Uses a Micro-Debounce (calculated in useTableFetch) to maintain 60fps UI.
+ * Synchronizes the internal table state to the browser and local storage.
  * 
  * @param {Object} state - The current reducer state.
- * @param {Object} options - Sync configurations (e.g., disableExpansionSync).
+ * @param {Object} options - Sync configurations.
  */
 export const updateURLFromState = (state, options = {}) => {
   const { disableExpansionSync = false } = options;
   const params = new URLSearchParams();
 
-  // --- Sync Core Parameters ---
+  // --- Sync Core Parameters (Shared) ---
   if (state.currentPage > 1) params.set("page", state.currentPage);
   if (state.pageSize !== 10) params.set("limit", state.pageSize);
   
@@ -100,8 +114,18 @@ export const updateURLFromState = (state, options = {}) => {
     params.set("filters", JSON.stringify(state.activeFilters));
   }
 
+  // --- Column Visibility (Persistence) ---
   if (state.hiddenColumns?.length > 0) {
+    // URL for sharing
     params.set("hide", state.hiddenColumns.join(","));
+    // LocalStorage for persistence across refreshes
+    try {
+      localStorage.setItem("dt_hidden_columns", JSON.stringify(state.hiddenColumns));
+    } catch (e) {}
+  } else {
+    try {
+      localStorage.removeItem("dt_hidden_columns");
+    } catch (e) {}
   }
 
   // --- Hybrid Expansion Logic ---
@@ -111,7 +135,6 @@ export const updateURLFromState = (state, options = {}) => {
       try { sessionStorage.removeItem("dt_expanded_state"); } catch (e) {}
     } 
     else if (state.expandedRows?.length > 0) {
-      // Logic: Store everything locally, but only share 10 to keep URL safe.
       try {
         sessionStorage.setItem("dt_expanded_state", JSON.stringify(state.expandedRows));
       } catch (e) {}
